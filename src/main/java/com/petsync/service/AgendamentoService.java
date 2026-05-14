@@ -1,58 +1,55 @@
 package com.petsync.service;
 
+import com.petsync.dao.AgendamentoDAO;
 import com.petsync.model.Agendamento;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AgendamentoService {
 
-    private List<Agendamento> agendamentos =
-            new ArrayList<>();
+    private AgendamentoDAO agendamentoDAO = new AgendamentoDAO();
 
     public void agendar(Agendamento agendamento) {
 
-        agendamentos.add(agendamento);
+        agendamentoDAO.salvar(agendamento);
 
         System.out.println("Agendamento realizado com sucesso!");
     }
 
     public List<Agendamento> listarAgendamentos() {
 
-        return agendamentos;
+        return agendamentoDAO.listarTodos();
     }
 
     public void cancelarAgendamento(int id) {
 
-        for (Agendamento agendamento : agendamentos) {
+        Agendamento agendamento = agendamentoDAO.buscarPorId(id);
 
-            if (agendamento.getId() == id) {
+        if (agendamento != null) {
 
-                agendamento.setStatus("CANCELADO");
+            agendamento.setStatus("CANCELADO");
 
-                System.out.println("Agendamento cancelado!");
+            System.out.println("Agendamento cancelado!");
 
-                return;
-            }
+        } else {
+
+            System.out.println("Agendamento não encontrado.");
         }
-
-        System.out.println("Agendamento não encontrado.");
     }
 
     public void concluirAgendamento(int id) {
 
-        for (Agendamento agendamento : agendamentos) {
+        Agendamento agendamento = agendamentoDAO.buscarPorId(id);
 
-            if (agendamento.getId() == id) {
+        if (agendamento != null) {
 
-                agendamento.setStatus("CONCLUIDO");
+            agendamento.setStatus("CONCLUIDO");
 
-                System.out.println("Agendamento concluído!");
+            System.out.println("Agendamento concluído!");
 
-                return;
-            }
+        } else {
+
+            System.out.println("Agendamento não encontrado.");
         }
-
-        System.out.println("Agendamento não encontrado.");
     }
 }
