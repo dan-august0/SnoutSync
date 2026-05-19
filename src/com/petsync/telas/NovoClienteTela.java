@@ -7,144 +7,147 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public class NovoClienteTela extends JFrame {
 
+    private JTextField tutor;
+    private JTextField telefone;
+    private JTextField pet;
+    private JTextField raca;
+    private JComboBox<String> comboTipo;
+
     public NovoClienteTela() {
-
         setTitle("PetSync - Novo Cliente");
-
-        setSize(700, 550);
-
+        setSize(1000, 600);
         setLocationRelativeTo(null);
-
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(null);
-
         setResizable(false);
+        getContentPane().setBackground(Navegacao.FUNDO);
 
-        getContentPane().setBackground(
-                new Color(245,247,255)
-        );
+        JButton novo = Navegacao.botaoAzul("+ Novo cliente", 12);
+        novo.setBounds(410, 48, 170, 40);
+        add(novo);
 
-        JLabel titulo = new JLabel("Cadastrar Cliente");
+        JPanel card = Navegacao.card(18);
+        card.setBounds(180, 115, 650, 420);
+        add(card);
 
-        titulo.setFont(
-                new Font("Segoe UI", Font.BOLD, 28)
-        );
+        JLabel dadosTutor = tituloSecao("Dados do tutor");
+        dadosTutor.setBounds(25, 18, 250, 24);
+        card.add(dadosTutor);
 
-        titulo.setForeground(
-                new Color(74,99,255)
-        );
+        adicionarLabel(card, "Nome completo", 25, 65);
+        tutor = criarCampo(25, 88, 625);
+        card.add(tutor);
 
-        titulo.setBounds(40,30,300,40);
+        adicionarLabel(card, "Telefone (WhatsApp)", 25, 145);
+        telefone = criarCampo(25, 168, 220);
+        telefone.setText("(00) 00000-0000");
+        card.add(telefone);
 
-        add(titulo);
+        adicionarLabel(card, "Tipo de agendamento", 300, 145);
+        comboTipo = new JComboBox<>(new String[]{"Avulso", "Plano"});
+        comboTipo.setBounds(300, 168, 170, 40);
+        card.add(comboTipo);
 
-        // NOME TUTOR
-        adicionarLabel("Nome do Tutor", 40, 100);
+        JPanel plano = Navegacao.card(8);
+        plano.setBackground(Navegacao.AZUL_CLARO);
+        plano.setBounds(480, 168, 145, 55);
+        JLabel planoTexto = new JLabel("<html>Plano mensal<br>4 banhos/mes</html>");
+        planoTexto.setFont(new Font("Segoe UI", Font.PLAIN, 10));
+        planoTexto.setForeground(Color.WHITE);
+        planoTexto.setBounds(12, 8, 125, 40);
+        plano.add(planoTexto);
+        card.add(plano);
 
-        JTextField tutor = criarCampo(40,130);
+        JLabel dadosPet = tituloSecao("Dados do pet");
+        dadosPet.setBounds(25, 245, 250, 24);
+        card.add(dadosPet);
 
-        add(tutor);
+        adicionarLabel(card, "Nome Pet", 25, 290);
+        pet = criarCampo(25, 313, 220);
+        pet.setText("EX: Rex");
+        card.add(pet);
 
-        // TELEFONE
-        adicionarLabel("Telefone", 370,100);
+        adicionarLabel(card, "Especie", 300, 290);
+        raca = criarCampo(300, 313, 220);
+        raca.setText("cao");
+        card.add(raca);
 
-        JTextField telefone = criarCampo(370,130);
+        adicionarLabel(card, "Observacoes", 25, 355);
+        JTextField obs = criarCampo(25, 378, 330);
+        obs.setText("EX: Nervoso com estranhos, alergias...");
+        card.add(obs);
 
-        add(telefone);
+        JButton novoPet = Navegacao.botaoAzul("+ Novo pet", 11);
+        novoPet.setBounds(370, 378, 105, 34);
+        card.add(novoPet);
 
-        // NOME PET
-        adicionarLabel("Nome do Pet", 40,210);
+        JButton voltar = Navegacao.botaoCinza("Fechar");
+        voltar.setBounds(485, 378, 70, 35);
+        voltar.addActionListener(e -> dispose());
+        card.add(voltar);
 
-        JTextField pet = criarCampo(40,240);
-
-        add(pet);
-
-        // RAÇA
-        adicionarLabel("Raça", 370,210);
-
-        JTextField raca = criarCampo(370,240);
-
-        add(raca);
-
-        // TIPO
-        adicionarLabel("Tipo de Atendimento", 40,320);
-
-        String[] tipos = {
-                "Plano",
-                "Avulso"
-        };
-
-        JComboBox<String> combo =
-                new JComboBox<>(tipos);
-
-        combo.setBounds(40,350,250,40);
-
-        add(combo);
-
-        // BOTAO
-        JButton salvar = new JButton("Salvar Cliente");
-
-        salvar.setBounds(220,440,220,45);
-
-        salvar.setBackground(
-                new Color(74,99,255)
-        );
-
+        JButton salvar = new JButton("Cadastrar");
+        salvar.setBounds(565, 378, 70, 35);
+        salvar.setBackground(Navegacao.AZUL);
         salvar.setForeground(Color.WHITE);
-
+        salvar.setBorderPainted(false);
         salvar.setFocusPainted(false);
-
-        salvar.setFont(
-                new Font("Segoe UI", Font.BOLD, 16)
-        );
-
-        add(salvar);
-
+        salvar.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        salvar.addActionListener(e -> salvarCliente());
+        card.add(salvar);
     }
 
-    private void adicionarLabel(String texto,
-                                int x,
-                                int y) {
+    private void salvarCliente() {
+        if (campoVazio(tutor) || campoVazio(telefone) || campoVazio(pet) || campoVazio(raca)) {
+            JOptionPane.showMessageDialog(this, "Preencha todos os campos.", "Atencao", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
+        AppDados.adicionarCliente(new AppDados.Cliente(
+                tutor.getText().trim(),
+                telefone.getText().trim(),
+                pet.getText().trim(),
+                raca.getText().trim(),
+                comboTipo.getSelectedItem().toString()
+        ));
+
+        JOptionPane.showMessageDialog(this, "Cliente cadastrado com sucesso!");
+        Navegacao.abrir(this, new ClientesTela());
+    }
+
+    private boolean campoVazio(JTextField campo) {
+        return campo.getText().trim().isEmpty();
+    }
+
+    private JLabel tituloSecao(String texto) {
         JLabel label = new JLabel(texto);
-
-        label.setFont(
-                new Font("Segoe UI", Font.BOLD, 15)
-        );
-
-        label.setBounds(x,y,200,20);
-
-        add(label);
+        label.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        label.setForeground(Navegacao.AZUL);
+        return label;
     }
 
-    private JTextField criarCampo(int x,
-                                  int y) {
+    private void adicionarLabel(JPanel pai, String texto, int x, int y) {
+        JLabel label = new JLabel(texto);
+        label.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        label.setBounds(x, y, 220, 20);
+        pai.add(label);
+    }
 
+    private JTextField criarCampo(int x, int y, int largura) {
         JTextField campo = new JTextField();
-
-        campo.setBounds(x,y,250,40);
-
-        campo.setBorder(
-                BorderFactory.createEmptyBorder(
-                        5,10,5,10
-                )
-        );
-
+        campo.setBounds(x, y, largura, 35);
+        campo.setBackground(Navegacao.CINZA);
+        campo.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
         return campo;
     }
 
     public static void main(String[] args) {
-
-        java.awt.EventQueue.invokeLater(() -> {
-
-            new NovoClienteTela().setVisible(true);
-
-        });
+        java.awt.EventQueue.invokeLater(() -> new NovoClienteTela().setVisible(true));
     }
 }

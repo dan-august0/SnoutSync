@@ -1,34 +1,48 @@
 package com.petsync.telas;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.WindowConstants;
 
-public class LoginTela extends javax.swing.JFrame {
+public class LoginTela extends JFrame {
 
     private static final java.util.logging.Logger logger =
             java.util.logging.Logger.getLogger(LoginTela.class.getName());
 
-    // Cores padrão do sistema
-    private static final Color COR_ROXO       = new Color(168, 177, 255);
-    private static final Color COR_ROXO_BTN   = new Color(143, 162, 255);
-    private static final Color COR_BRANCO      = Color.WHITE;
+    private static final Color COR_ROXO = new Color(168, 177, 255);
+    private static final Color COR_ROXO_BTN = new Color(143, 162, 255);
+    private static final Color COR_BRANCO = Color.WHITE;
     private static final Color COR_PLACEHOLDER = new Color(180, 180, 180);
-    private static final Color COR_TEXTO       = new Color(60, 60, 60);
+    private static final Color COR_TEXTO = new Color(60, 60, 60);
+
+    private JPanel pnlEsquerdo;
+    private JPanel pnlDireito;
+    private JTextField txtUsuario;
+    private JPasswordField txtSenha;
 
     public LoginTela() {
         initComponents();
         configurarPlaceholders();
-        setLocationRelativeTo(null); // centraliza na tela
+        setLocationRelativeTo(null);
     }
 
     private void configurarPlaceholders() {
-        // Placeholder no campo usuário
         txtUsuario.setForeground(COR_PLACEHOLDER);
         txtUsuario.setText("username");
         txtUsuario.addFocusListener(new FocusAdapter() {
@@ -39,6 +53,7 @@ public class LoginTela extends javax.swing.JFrame {
                     txtUsuario.setForeground(COR_TEXTO);
                 }
             }
+
             @Override
             public void focusLost(FocusEvent e) {
                 if (txtUsuario.getText().isEmpty()) {
@@ -48,8 +63,6 @@ public class LoginTela extends javax.swing.JFrame {
             }
         });
 
-        // Placeholder no campo senha
-        char[] senhaVazia = {'p','a','s','s','w','o','r','d'};
         txtSenha.setEchoChar((char) 0);
         txtSenha.setText("password");
         txtSenha.setForeground(COR_PLACEHOLDER);
@@ -60,9 +73,10 @@ public class LoginTela extends javax.swing.JFrame {
                 if (valor.equals("password")) {
                     txtSenha.setText("");
                     txtSenha.setForeground(COR_TEXTO);
-                    txtSenha.setEchoChar('•');
+                    txtSenha.setEchoChar('*');
                 }
             }
+
             @Override
             public void focusLost(FocusEvent e) {
                 if (new String(txtSenha.getPassword()).isEmpty()) {
@@ -74,10 +88,7 @@ public class LoginTela extends javax.swing.JFrame {
         });
     }
 
-    @SuppressWarnings("unchecked")
     private void initComponents() {
-
-        // ── Painel esquerdo roxo ──────────────────────────────────────
         pnlEsquerdo = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -89,30 +100,29 @@ public class LoginTela extends javax.swing.JFrame {
         pnlEsquerdo.setBackground(COR_ROXO);
         pnlEsquerdo.setLayout(null);
 
-        lblPetSync = new JLabel("PetSync");
+        JLabel lblPetSync = new JLabel("PetSync");
         lblPetSync.setFont(new Font("Segoe UI", Font.BOLD, 52));
         lblPetSync.setForeground(COR_BRANCO);
         lblPetSync.setBounds(100, 230, 300, 65);
         pnlEsquerdo.add(lblPetSync);
 
-        lblSubtitulo = new JLabel("Pet e Shop");
+        JLabel lblSubtitulo = new JLabel("Pet e Shop");
         lblSubtitulo.setFont(new Font("Segoe UI", Font.BOLD, 20));
         lblSubtitulo.setForeground(COR_BRANCO);
         lblSubtitulo.setBounds(155, 295, 200, 30);
         pnlEsquerdo.add(lblSubtitulo);
 
-        // ── Painel direito branco ─────────────────────────────────────
         pnlDireito = new JPanel();
         pnlDireito.setBackground(COR_BRANCO);
         pnlDireito.setLayout(null);
 
-        lblLogin = new JLabel("LOGIN");
+        JLabel lblLogin = new JLabel("LOGIN");
         lblLogin.setFont(new Font("Segoe UI", Font.BOLD, 34));
         lblLogin.setForeground(COR_TEXTO);
         lblLogin.setBounds(180, 80, 200, 50);
         pnlDireito.add(lblLogin);
 
-        lblUsuario = new JLabel("Usuário");
+        JLabel lblUsuario = new JLabel("Usuario");
         lblUsuario.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         lblUsuario.setForeground(COR_TEXTO);
         lblUsuario.setBounds(90, 155, 200, 20);
@@ -126,7 +136,7 @@ public class LoginTela extends javax.swing.JFrame {
         txtUsuario.setBounds(90, 178, 280, 38);
         pnlDireito.add(txtUsuario);
 
-        lblSenha = new JLabel("Senha");
+        JLabel lblSenha = new JLabel("Senha");
         lblSenha.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         lblSenha.setForeground(COR_TEXTO);
         lblSenha.setBounds(90, 228, 200, 20);
@@ -140,7 +150,7 @@ public class LoginTela extends javax.swing.JFrame {
         txtSenha.setBounds(90, 250, 280, 38);
         pnlDireito.add(txtSenha);
 
-        btnEntrar = new JButton("Entrar") {
+        JButton btnEntrar = new JButton("Entrar") {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
@@ -159,10 +169,22 @@ public class LoginTela extends javax.swing.JFrame {
         btnEntrar.setOpaque(false);
         btnEntrar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnEntrar.setBounds(90, 330, 280, 42);
-        btnEntrar.addActionListener(this::btnEntrarActionPerformed);
+        btnEntrar.addActionListener(e -> entrar());
         pnlDireito.add(btnEntrar);
 
-        // ── Frame principal ───────────────────────────────────────────
+        JLabel lblEsqueciSenha = new JLabel("Esqueci a senha?");
+        lblEsqueciSenha.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        lblEsqueciSenha.setForeground(COR_ROXO_BTN);
+        lblEsqueciSenha.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        lblEsqueciSenha.setBounds(185, 385, 130, 25);
+        lblEsqueciSenha.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                recuperarSenha();
+            }
+        });
+        pnlDireito.add(lblEsqueciSenha);
+
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle("PetSync - Login");
         setPreferredSize(new java.awt.Dimension(1000, 600));
@@ -178,23 +200,38 @@ public class LoginTela extends javax.swing.JFrame {
         pack();
     }
 
-    private void btnEntrarActionPerformed(java.awt.event.ActionEvent evt) {
+    private void entrar() {
         String usuario = txtUsuario.getText().trim();
-        String senha   = new String(txtSenha.getPassword()).trim();
+        String senha = new String(txtSenha.getPassword()).trim();
 
-        // Validação simples — substitua pela sua lógica de autenticação real
-        if (usuario.isEmpty() || usuario.equals("username") ||
-            senha.isEmpty()   || senha.equals("password")) {
-            JOptionPane.showMessageDialog(this,
-                    "Por favor, preencha usuário e senha.",
-                    "Atenção", JOptionPane.WARNING_MESSAGE);
+        if (usuario.isEmpty() || usuario.equals("username") || senha.isEmpty() || senha.equals("password")) {
+            JOptionPane.showMessageDialog(this, "Por favor, preencha usuario e senha.", "Atencao", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        // Abre o Dashboard e fecha o Login
-        DashboardTela dashboard = new DashboardTela();
-        dashboard.setVisible(true);
-        this.dispose();
+        Navegacao.abrir(this, new DashboardTela());
+    }
+
+    private void recuperarSenha() {
+        String usuario = txtUsuario.getText().trim();
+
+        if (usuario.isEmpty() || usuario.equals("username")) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Digite seu usuario para recuperar a senha.",
+                    "Recuperar senha",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+            txtUsuario.requestFocus();
+            return;
+        }
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Enviamos as instrucoes de recuperacao para o usuario: " + usuario,
+                "Recuperar senha",
+                JOptionPane.INFORMATION_MESSAGE
+        );
     }
 
     public static void main(String[] args) {
@@ -211,16 +248,4 @@ public class LoginTela extends javax.swing.JFrame {
 
         java.awt.EventQueue.invokeLater(() -> new LoginTela().setVisible(true));
     }
-
-    // ── Declaração de variáveis ───────────────────────────────────────
-    private JPanel      pnlEsquerdo;
-    private JPanel      pnlDireito;
-    private JLabel      lblPetSync;
-    private JLabel      lblSubtitulo;
-    private JLabel      lblLogin;
-    private JLabel      lblUsuario;
-    private JLabel      lblSenha;
-    private JTextField  txtUsuario;
-    private JPasswordField txtSenha;
-    private JButton     btnEntrar;
 }

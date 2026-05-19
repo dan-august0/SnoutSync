@@ -2,7 +2,7 @@ package com.petsync.telas;
 
 import java.awt.Color;
 import java.awt.Font;
-import javax.swing.BorderFactory;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -11,212 +11,74 @@ import javax.swing.JTextField;
 public class ClientesTela extends JFrame {
 
     public ClientesTela() {
+        Navegacao.configurarJanela(this, "PetSync - Clientes");
+        add(Navegacao.criarSidebar(this, "Clientes & Pets"));
+        Navegacao.adicionarTopo(this, "Clientes & Pets");
 
-        setTitle("PetSync - Clientes");
-        setSize(1000, 600);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(null);
-        setResizable(false);
-
-        getContentPane().setBackground(new Color(245,247,255));
-
-        // SIDEBAR
-        JPanel sidebar = new JPanel();
-        sidebar.setLayout(null);
-        sidebar.setBackground(new Color(168,177,255));
-        sidebar.setBounds(0,0,220,600);
-
-        add(sidebar);
-
-        JLabel logo = new JLabel("PETSYNC");
-        logo.setFont(new Font("Segoe UI", Font.BOLD, 28));
-        logo.setForeground(Color.WHITE);
-        logo.setBounds(30,30,200,40);
-
-        sidebar.add(logo);
-
-        JLabel sub = new JLabel("Pet e Shop");
-        sub.setForeground(Color.WHITE);
-        sub.setBounds(70,65,100,20);
-
-        sidebar.add(sub);
-
-        JLabel dash = new JLabel("Dashboard");
-        dash.setForeground(Color.WHITE);
-        dash.setFont(new Font("Segoe UI", Font.BOLD, 22));
-        dash.setBounds(25,140,200,30);
-
-        sidebar.add(dash);
-
-        JLabel agenda = new JLabel("Agendamentos");
-        agenda.setForeground(Color.WHITE);
-        agenda.setFont(new Font("Segoe UI", Font.BOLD, 22));
-        agenda.setBounds(25,210,200,30);
-
-        sidebar.add(agenda);
-
-        JLabel clientes = new JLabel("Clientes & Pets");
-        clientes.setForeground(Color.WHITE);
-        clientes.setFont(new Font("Segoe UI", Font.BOLD, 22));
-        clientes.setBounds(25,280,220,30);
-
-        sidebar.add(clientes);
-
-        JLabel financeiro = new JLabel("Financeiro");
-        financeiro.setForeground(Color.WHITE);
-        financeiro.setFont(new Font("Segoe UI", Font.BOLD, 22));
-        financeiro.setBounds(25,350,200,30);
-
-        sidebar.add(financeiro);
-
-        // TITULO
-        JLabel titulo = new JLabel("Clientes & Pets");
-
-        titulo.setFont(new Font("Segoe UI", Font.BOLD, 28));
-
-        titulo.setForeground(new Color(74,99,255));
-
-        titulo.setBounds(260,30,300,40);
-
+        JLabel titulo = new JLabel("Lista de Clientes");
+        titulo.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        titulo.setForeground(Navegacao.AZUL);
+        titulo.setBounds(310, 112, 180, 22);
         add(titulo);
 
-        // BOTAO NOVO CLIENTE
-        JPanel novoCliente = new JPanel();
-
-        novoCliente.setBackground(new Color(74,99,255));
-
-        novoCliente.setBounds(760,30,170,40);
-
-        novoCliente.setLayout(null);
-
-        JLabel txtBotao = new JLabel("+ Novo Cliente");
-
-        txtBotao.setForeground(Color.WHITE);
-
-        txtBotao.setBounds(30,10,150,20);
-
-        novoCliente.add(txtBotao);
-
-        add(novoCliente);
-
-        // BUSCA
-        JTextField busca = new JTextField("Buscar cliente ou pet...");
-
-        busca.setBounds(260,100,300,40);
-
-        busca.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
-
+        JTextField busca = Navegacao.campo("Buscar por pet ou cliente...");
+        busca.setBounds(310, 145, 520, 32);
         add(busca);
 
-        // CARDS
-        JPanel card1 = criarCard(
-                "João Silva",
-                "Thor",
-                "Golden Retriever",
-                "Plano"
-        );
+        JComboBox<String> tipo = new JComboBox<>(new String[]{"Todos os tipos", "Plano", "Avulso"});
+        tipo.setBounds(845, 145, 120, 32);
+        add(tipo);
 
-        card1.setBounds(260,180,680,90);
-
-        add(card1);
-
-        JPanel card2 = criarCard(
-                "Maria Souza",
-                "Luna",
-                "Shih-tzu",
-                "Avulso"
-        );
-
-        card2.setBounds(260,290,680,90);
-
-        add(card2);
-
-        JPanel card3 = criarCard(
-                "Carlos Lima",
-                "Mel",
-                "Poodle",
-                "Plano"
-        );
-
-        card3.setBounds(260,400,680,90);
-
-        add(card3);
+        int y = 235;
+        for (AppDados.Cliente cliente : AppDados.clientes) {
+            JPanel card = criarCard(cliente);
+            card.setBounds(310, y, 655, 68);
+            add(card);
+            y += 86;
+        }
     }
 
-    private JPanel criarCard(String tutor,
-                             String pet,
-                             String raca,
-                             String tipo) {
+    private JPanel criarCard(AppDados.Cliente cliente) {
+        JPanel card = Navegacao.card(18);
 
-        JPanel card = new JPanel();
+        JLabel iniciais = new JLabel(iniciais(cliente.tutor));
+        iniciais.setHorizontalAlignment(JLabel.CENTER);
+        iniciais.setOpaque(true);
+        iniciais.setBackground(Navegacao.AZUL);
+        iniciais.setForeground(Color.WHITE);
+        iniciais.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        iniciais.setBounds(18, 16, 38, 38);
+        card.add(iniciais);
 
-        card.setLayout(null);
-
-        card.setBackground(Color.WHITE);
-
-        card.setBorder(
-                BorderFactory.createLineBorder(
-                        new Color(220,220,220)
-                )
-        );
-
-        JLabel tutorLabel = new JLabel(tutor);
-
-        tutorLabel.setFont(
-                new Font("Segoe UI", Font.BOLD, 18)
-        );
-
-        tutorLabel.setBounds(20,10,300,25);
-
+        JLabel tutorLabel = new JLabel(cliente.tutor);
+        tutorLabel.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+        tutorLabel.setForeground(Navegacao.TEXTO);
+        tutorLabel.setBounds(75, 12, 300, 25);
         card.add(tutorLabel);
 
-        JLabel petLabel = new JLabel(
-                "Pet: " + pet + " • " + raca
-        );
-
-        petLabel.setFont(
-                new Font("Segoe UI", Font.PLAIN, 15)
-        );
-
-        petLabel.setBounds(20,45,300,20);
-
+        JLabel petLabel = new JLabel("1 pet  -  " + cliente.telefone);
+        petLabel.setFont(new Font("Segoe UI", Font.PLAIN, 10));
+        petLabel.setBounds(75, 40, 260, 18);
         card.add(petLabel);
 
-        JPanel tipoPanel = new JPanel();
-
-        if(tipo.equals("Plano")) {
-
-            tipoPanel.setBackground(
-                    new Color(46,204,113)
-            );
-
-        } else {
-
-            tipoPanel.setBackground(
-                    new Color(241,196,15)
-            );
-        }
-
-        tipoPanel.setBounds(520,25,120,35);
-
-        JLabel tipoLabel = new JLabel(tipo);
-
-        tipoLabel.setForeground(Color.WHITE);
-
-        tipoPanel.add(tipoLabel);
-
-        card.add(tipoPanel);
+        JLabel tipoLabel = new JLabel("Plano".equals(cliente.tipo) ? "Plano mensal" : "Avulso");
+        tipoLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        tipoLabel.setForeground("Plano".equals(cliente.tipo) ? Navegacao.AZUL : new Color(65, 170, 40));
+        tipoLabel.setBounds(530, 24, 110, 22);
+        card.add(tipoLabel);
 
         return card;
     }
 
+    private String iniciais(String nome) {
+        String[] partes = nome.trim().split(" ");
+        if (partes.length == 1) {
+            return partes[0].substring(0, Math.min(2, partes[0].length())).toUpperCase();
+        }
+        return (partes[0].substring(0, 1) + partes[partes.length - 1].substring(0, 1)).toUpperCase();
+    }
+
     public static void main(String[] args) {
-
-        java.awt.EventQueue.invokeLater(() -> {
-
-            new ClientesTela().setVisible(true);
-
-        });
+        java.awt.EventQueue.invokeLater(() -> new ClientesTela().setVisible(true));
     }
 }
