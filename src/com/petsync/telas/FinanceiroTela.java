@@ -10,263 +10,129 @@ import javax.swing.JPanel;
 public class FinanceiroTela extends JFrame {
 
     public FinanceiroTela() {
+        Navegacao.configurarJanela(this, "PetSync - Financeiro");
+        add(Navegacao.criarSidebar(this, "Financeiro"));
+        Navegacao.adicionarTopo(this, "Financeiro");
 
-        setTitle("PetSync - Financeiro");
-        setSize(1000, 600);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(null);
-        setResizable(false);
-
-        getContentPane().setBackground(
-                new Color(245,247,255)
-        );
-
-        // SIDEBAR
-        JPanel sidebar = new JPanel();
-
-        sidebar.setLayout(null);
-
-        sidebar.setBackground(
-                new Color(168,177,255)
-        );
-
-        sidebar.setBounds(0,0,220,600);
-
-        add(sidebar);
-
-        JLabel logo = new JLabel("PETSYNC");
-
-        logo.setFont(
-                new Font("Segoe UI", Font.BOLD, 28)
-        );
-
-        logo.setForeground(Color.WHITE);
-
-        logo.setBounds(30,30,200,40);
-
-        sidebar.add(logo);
-
-        JLabel sub = new JLabel("Pet e Shop");
-
-        sub.setForeground(Color.WHITE);
-
-        sub.setBounds(70,65,100,20);
-
-        sidebar.add(sub);
-
-        adicionarMenu(sidebar,
-                "Dashboard",
-                140);
-
-        adicionarMenu(sidebar,
-                "Agendamentos",
-                210);
-
-        adicionarMenu(sidebar,
-                "Clientes & Pets",
-                280);
-
-        adicionarMenu(sidebar,
-                "Financeiro",
-                350);
-
-        // TITULO
-        JLabel titulo = new JLabel("Financeiro");
-
-        titulo.setFont(
-                new Font("Segoe UI", Font.BOLD, 28)
-        );
-
-        titulo.setForeground(
-                new Color(74,99,255)
-        );
-
-        titulo.setBounds(260,30,250,40);
-
-        add(titulo);
-
-        // CARDS
-        JPanel faturamento = criarCard(
-                "Faturamento Mensal",
-                "R$ 12.450"
-        );
-
-        faturamento.setBounds(260,110,220,120);
-
+        JPanel faturamento = criarCard("Faturamento por mes", "R$" + AppDados.faturamentoEstimado(), AppDados.agendamentos.size() + " atendimentos");
+        faturamento.setBounds(320, 125, 140, 80);
         add(faturamento);
 
-        JPanel planos = criarCard(
-                "Planos Ativos",
-                "48"
-        );
-
-        planos.setBounds(520,110,220,120);
-
+        JPanel planos = criarCard("Planos ativos", "R$ " + (AppDados.totalPlanos() * 90), AppDados.totalPlanos() + " planos");
+        planos.setBounds(555, 125, 140, 80);
         add(planos);
 
-        JPanel servicos = criarCard(
-                "Serviços Realizados",
-                "126"
-        );
+        JPanel pendentes = criarCard("Pagamentos pendentes", "R$160", "2 atendimentos");
+        pendentes.setBounds(795, 125, 140, 80);
+        add(pendentes);
 
-        servicos.setBounds(780,110,180,120);
-
-        add(servicos);
-
-        // TITULO LANCAMENTOS
-        JLabel lancamentos = new JLabel(
-                "Lançamentos Recentes"
-        );
-
-        lancamentos.setFont(
-                new Font("Segoe UI", Font.BOLD, 20)
-        );
-
-        lancamentos.setForeground(
-                new Color(74,99,255)
-        );
-
-        lancamentos.setBounds(260,270,300,30);
-
+        JLabel lancamentos = new JLabel("Lancamentos Recentes");
+        lancamentos.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        lancamentos.setForeground(Navegacao.TEXTO);
+        lancamentos.setBounds(320, 235, 200, 22);
         add(lancamentos);
 
-        // LISTA
-        JPanel item1 = criarLancamento(
-                "Banho - Thor",
-                "R$ 70,00"
-        );
+        JPanel tabela = new JPanel();
+        tabela.setLayout(null);
+        tabela.setBackground(new Color(246, 246, 246));
+        tabela.setBounds(320, 265, 615, 155);
+        add(tabela);
 
-        item1.setBounds(260,320,680,70);
+        adicionarCabecalho(tabela);
 
-        add(item1);
+        int y = 34;
+        for (AppDados.Agendamento agendamento : AppDados.agendamentos) {
+            adicionarLinha(tabela, agendamento, y);
+            y += 24;
+        }
 
-        JPanel item2 = criarLancamento(
-                "Banho + Tosa - Luna",
-                "R$ 120,00"
-        );
-
-        item2.setBounds(260,410,680,70);
-
-        add(item2);
-
-        JPanel item3 = criarLancamento(
-                "Tosa - Mel",
-                "R$ 55,00"
-        );
-
-        item3.setBounds(260,500,680,70);
-
-        add(item3);
+        javax.swing.JButton relatorio = Navegacao.botaoAzul("Gerar relatorio financeiro", 12);
+        relatorio.setBounds(570, 470, 180, 38);
+        add(relatorio);
     }
 
-    private void adicionarMenu(JPanel painel,
-                               String texto,
-                               int y) {
-
-        JLabel label = new JLabel(texto);
-
-        label.setForeground(Color.WHITE);
-
-        label.setFont(
-                new Font("Segoe UI", Font.BOLD, 22)
-        );
-
-        label.setBounds(25,y,220,30);
-
-        painel.add(label);
+    private int valor(String servico) {
+        if ("Banho + Tosa".equals(servico)) {
+            return 120;
+        }
+        if ("Banho".equals(servico)) {
+            return 70;
+        }
+        return 55;
     }
 
-    private JPanel criarCard(String titulo,
-                             String valor) {
-
-        JPanel card = new JPanel();
-
-        card.setLayout(null);
-
-        card.setBackground(Color.WHITE);
-
-        card.setBorder(
-                BorderFactory.createLineBorder(
-                        new Color(220,220,220)
-                )
-        );
+    private JPanel criarCard(String titulo, String valor, String detalhe) {
+        JPanel card = Navegacao.card(16);
 
         JLabel tituloLabel = new JLabel(titulo);
-
-        tituloLabel.setFont(
-                new Font("Segoe UI", Font.BOLD, 16)
-        );
-
-        tituloLabel.setForeground(
-                new Color(74,99,255)
-        );
-
-        tituloLabel.setBounds(20,20,200,20);
-
+        tituloLabel.setFont(new Font("Segoe UI", Font.PLAIN, 10));
+        tituloLabel.setForeground(Navegacao.TEXTO);
+        tituloLabel.setBounds(15, 10, 115, 18);
         card.add(tituloLabel);
 
         JLabel valorLabel = new JLabel(valor);
-
-        valorLabel.setFont(
-                new Font("Segoe UI", Font.BOLD, 28)
-        );
-
-        valorLabel.setBounds(20,55,180,40);
-
+        valorLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        valorLabel.setBounds(15, 32, 110, 20);
         card.add(valorLabel);
+
+        JLabel detalheLabel = new JLabel(detalhe);
+        detalheLabel.setFont(new Font("Segoe UI", Font.PLAIN, 9));
+        detalheLabel.setBounds(15, 52, 110, 16);
+        card.add(detalheLabel);
 
         return card;
     }
 
-    private JPanel criarLancamento(String servico,
-                                   String valor) {
+    private void adicionarCabecalho(JPanel tabela) {
+        String[] colunas = {"Data", "Cliente", "Pet", "Servico", "Tipo", "Forma de pagto", "Valor", "Status"};
+        int[] x = {12, 75, 160, 225, 330, 395, 505, 555};
+        for (int i = 0; i < colunas.length; i++) {
+            JLabel label = new JLabel(colunas[i]);
+            label.setFont(new Font("Segoe UI", Font.BOLD, 8));
+            label.setBounds(x[i], 10, 80, 14);
+            tabela.add(label);
+        }
+    }
 
-        JPanel painel = new JPanel();
+    private void adicionarLinha(JPanel tabela, AppDados.Agendamento agendamento, int y) {
+        adicionarTexto(tabela, agendamento.data, 12, y, 60, Color.BLACK);
+        adicionarTexto(tabela, agendamento.cliente, 75, y, 85, Color.BLACK);
+        adicionarTexto(tabela, agendamento.pet, 160, y, 55, Color.BLACK);
+        adicionarTexto(tabela, agendamento.servico, 225, y, 95, Color.BLACK);
+        adicionarTexto(tabela, tipoCliente(agendamento.cliente), 330, y, 55, Color.BLACK);
+        adicionarTexto(tabela, "Pix", 395, y, 75, Color.BLACK);
+        adicionarTexto(tabela, "R$" + valor(agendamento.servico), 505, y, 45, new Color(65, 170, 40));
+        adicionarTexto(tabela, agendamento.status, 555, y, 65, corStatus(agendamento.status));
+    }
 
-        painel.setLayout(null);
+    private void adicionarTexto(JPanel tabela, String texto, int x, int y, int largura, Color cor) {
+        JLabel label = new JLabel(texto);
+        label.setFont(new Font("Segoe UI", Font.PLAIN, 8));
+        label.setForeground(cor);
+        label.setBounds(x, y, largura, 16);
+        tabela.add(label);
+    }
 
-        painel.setBackground(Color.WHITE);
+    private String tipoCliente(String tutor) {
+        for (AppDados.Cliente cliente : AppDados.clientes) {
+            if (cliente.tutor.equals(tutor)) {
+                return cliente.tipo;
+            }
+        }
+        return "Avulso";
+    }
 
-        painel.setBorder(
-                BorderFactory.createLineBorder(
-                        new Color(220,220,220)
-                )
-        );
-
-        JLabel servicoLabel = new JLabel(servico);
-
-        servicoLabel.setFont(
-                new Font("Segoe UI", Font.BOLD, 18)
-        );
-
-        servicoLabel.setBounds(20,20,300,25);
-
-        painel.add(servicoLabel);
-
-        JLabel valorLabel = new JLabel(valor);
-
-        valorLabel.setFont(
-                new Font("Segoe UI", Font.BOLD, 18)
-        );
-
-        valorLabel.setForeground(
-                new Color(46,204,113)
-        );
-
-        valorLabel.setBounds(560,20,120,25);
-
-        painel.add(valorLabel);
-
-        return painel;
+    private Color corStatus(String status) {
+        if ("Confirmado".equals(status)) {
+            return new Color(65, 170, 40);
+        }
+        if ("Cancelado".equals(status)) {
+            return new Color(225, 130, 35);
+        }
+        return Navegacao.AZUL;
     }
 
     public static void main(String[] args) {
-
-        java.awt.EventQueue.invokeLater(() -> {
-
-            new FinanceiroTela().setVisible(true);
-
-        });
+        java.awt.EventQueue.invokeLater(() -> new FinanceiroTela().setVisible(true));
     }
 }

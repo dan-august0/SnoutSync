@@ -2,466 +2,127 @@ package com.petsync.telas;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JButton;
-
 
 public class DashboardTela extends JFrame {
 
     public DashboardTela() {
+        Navegacao.configurarJanela(this, "PetSync - Dashboard");
+        add(Navegacao.criarSidebar(this, "Dashboard"));
+        Navegacao.adicionarTopo(this, "Dashboard");
 
-        setTitle("PetSync Dashboard");
-
-        setSize(1000,600);
-
-        setLocationRelativeTo(null);
-
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        setLayout(null);
-
-        setResizable(false);
-
-        getContentPane().setBackground(
-                new Color(245,247,255)
-        );
-
-        // SIDEBAR
-
-        JPanel sidebar = new JPanel();
-
-        sidebar.setLayout(null);
-
-        sidebar.setBackground(
-                new Color(168,177,255)
-        );
-
-        sidebar.setBounds(0,0,220,600);
-
-        add(sidebar);
-
-        JLabel logo = new JLabel("PETSYNC");
-
-        logo.setForeground(Color.WHITE);
-
-        logo.setFont(
-                new Font("Segoe UI", Font.BOLD, 28)
-        );
-
-        logo.setBounds(35,30,200,40);
-
-        sidebar.add(logo);
-
-        JLabel subtitulo = new JLabel("Pet e Shop");
-
-        subtitulo.setForeground(Color.WHITE);
-
-        subtitulo.setBounds(70,65,100,20);
-
-        sidebar.add(subtitulo);
-
-        JLabel dashboard =
-                criarMenu("Dashboard",140);
-
-        sidebar.add(dashboard);
-
-        JLabel agendamentos =
-                criarMenu("Agendamentos",210);
-        agendamentos.addMouseListener(new MouseAdapter() {
-
-    public void mouseClicked(MouseEvent e) {
-
-        new AgendamentosTela().setVisible(true);
-
-        dispose();
-    }
-});
-
-        sidebar.add(agendamentos);
-
-        JLabel clientes =
-                criarMenu("Clientes & Pets",280);
-        clientes.addMouseListener(new MouseAdapter() {
-
-    public void mouseClicked(MouseEvent e) {
-
-        new ClientesTela().setVisible(true);
-
-        dispose();
-    }
-});
-
-        sidebar.add(clientes);
-
-        JLabel financeiro =
-                criarMenu("Financeiro",350);
-        financeiro.addMouseListener(new MouseAdapter() {
-
-    public void mouseClicked(MouseEvent e) {
-
-        new FinanceiroTela().setVisible(true);
-
-        dispose();
-    }
-});
-
-        sidebar.add(financeiro);
-
-        JLabel novoCliente =
-                criarMenu("+ Novo Cliente",500);
-        novoCliente.addMouseListener(new MouseAdapter() {
-
-    public void mouseClicked(MouseEvent e) {
-
-        new NovoClienteTela().setVisible(true);
-
-    }
-});
-
-        sidebar.add(novoCliente);
-
-        // TITULO
-
-        JLabel titulo = new JLabel("Dashboard");
-
-        titulo.setFont(
-                new Font("Segoe UI", Font.BOLD, 30)
-        );
-
-        titulo.setForeground(
-                new Color(74,99,255)
-        );
-
-        titulo.setBounds(260,30,300,40);
-
-        add(titulo);
-
-        // CARDS
-
-        JPanel card1 = criarCard(
-                "Agendamentos Hoje",
-                "12"
-        );
-
-        card1.setBounds(260,110,200,110);
-
+        JPanel card1 = criarCard("Agendamentos Hoje", String.valueOf(AppDados.agendamentosHoje()));
+        card1.setBounds(310, 115, 120, 68);
         add(card1);
 
-        JPanel card2 = criarCard(
-                "Clientes Ativos",
-                "48"
-        );
-
-        card2.setBounds(500,110,200,110);
-
+        JPanel card2 = criarCard("Clientes Ativos", String.valueOf(AppDados.clientes.size()));
+        card2.setBounds(455, 115, 120, 68);
         add(card2);
 
-        JPanel card3 = criarCard(
-                "Planos Mensais",
-                "22"
-        );
-
-        card3.setBounds(740,110,200,110);
-
+        JPanel card3 = criarCard("Planos Mensais", String.valueOf(AppDados.totalPlanos()));
+        card3.setBounds(600, 115, 120, 68);
         add(card3);
 
-        // AGENDA
+        JPanel agendaPainel = Navegacao.card(18);
+        agendaPainel.setBounds(310, 230, 280, 250);
+        add(agendaPainel);
 
-        JLabel agendaTitulo =
-                new JLabel("Agenda de Hoje");
+        JLabel agendaTitulo = new JLabel("Agenda de hoje");
+        agendaTitulo.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        agendaTitulo.setForeground(Navegacao.AZUL);
+        agendaTitulo.setBounds(28, 18, 220, 30);
+        agendaPainel.add(agendaTitulo);
 
-        agendaTitulo.setFont(
-                new Font("Segoe UI", Font.BOLD, 20)
-        );
+        JPanel canceladosPainel = Navegacao.card(18);
+        canceladosPainel.setBounds(650, 230, 280, 250);
+        add(canceladosPainel);
 
-        agendaTitulo.setForeground(
-                new Color(74,99,255)
-        );
+        JLabel cancelados = new JLabel("Agendamentos cancelados");
+        cancelados.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        cancelados.setForeground(Navegacao.AZUL);
+        cancelados.setBounds(28, 18, 230, 30);
+        canceladosPainel.add(cancelados);
 
-        agendaTitulo.setBounds(260,270,220,30);
+        int yAgenda = 65;
+        int yCancelado = 65;
+        for (AppDados.Agendamento agendamento : AppDados.agendamentos) {
+            JPanel item = criarAgendamento(
+                    agendamento.horario + " - " + agendamento.pet,
+                    agendamento.cliente,
+                    agendamento.servico,
+                    agendamento.status
+            );
 
-        add(agendaTitulo);
-
-        JPanel agenda1 = criarAgendamento(
-                "09:00 - Thor",
-                "Banho"
-        );
-
-        agenda1.setBounds(260,320,300,70);
-
-        add(agenda1);
-
-        JPanel agenda2 = criarAgendamento(
-                "11:00 - Luna",
-                "Banho + Tosa"
-        );
-
-        agenda2.setBounds(260,410,300,70);
-
-        add(agenda2);
-
-        // CANCELADOS
-
-        JLabel cancelados =
-                new JLabel("Cancelados");
-
-        cancelados.setFont(
-                new Font("Segoe UI", Font.BOLD, 20)
-        );
-
-        cancelados.setForeground(
-                new Color(74,99,255)
-        );
-
-        cancelados.setBounds(650,270,200,30);
-
-        add(cancelados);
-
-        JPanel cancelado =
-                criarAgendamento(
-                        "14:00 - Mel",
-                        "Tosa"
-                );
-
-        cancelado.setBounds(650,320,300,70);
-
-        add(cancelado);
-
-        // NAVEGACAO
-
-        dashboard.addMouseListener(
-                new MouseAdapter() {
-
-            public void mouseClicked(MouseEvent e) {
-
-                new DashboardTela()
-                        .setVisible(true);
-
-                dispose();
+            if ("Cancelado".equals(agendamento.status)) {
+                item.setBounds(20, yCancelado, 240, 62);
+                yCancelado += 78;
+                canceladosPainel.add(item);
+            } else {
+                item.setBounds(20, yAgenda, 240, 62);
+                yAgenda += 78;
+                agendaPainel.add(item);
             }
-        });
-
-        agendamentos.addMouseListener(
-                new MouseAdapter() {
-
-            public void mouseClicked(MouseEvent e) {
-
-                try {
-
-                    new AgendamentosTela()
-                            .setVisible(true);
-
-                    dispose();
-
-                } catch (Exception ex) {
-
-                    System.out.println(
-                            "Tela Agendamentos não encontrada"
-                    );
-                }
-            }
-        });
-
-        clientes.addMouseListener(
-                new MouseAdapter() {
-
-            public void mouseClicked(MouseEvent e) {
-
-                try {
-
-                    new ClientesTela()
-                            .setVisible(true);
-
-                    dispose();
-
-                } catch (Exception ex) {
-
-                    System.out.println(
-                            "Tela Clientes não encontrada"
-                    );
-                }
-            }
-        });
-
-        financeiro.addMouseListener(
-                new MouseAdapter() {
-
-            public void mouseClicked(MouseEvent e) {
-
-                try {
-
-                    new FinanceiroTela()
-                            .setVisible(true);
-
-                    dispose();
-
-                } catch (Exception ex) {
-
-                    System.out.println(
-                            "Tela Financeiro não encontrada"
-                    );
-                }
-            }
-        });
-
-        novoCliente.addMouseListener(
-                new MouseAdapter() {
-
-            public void mouseClicked(MouseEvent e) {
-
-                try {
-
-                    new NovoClienteTela()
-                            .setVisible(true);
-
-                } catch (Exception ex) {
-
-                    System.out.println(
-                            "Tela Novo Cliente não encontrada"
-                    );
-                }
-            }
-        });
+        }
     }
 
-    private JLabel criarMenu(
-            String texto,
-            int y
-    ) {
+    private JPanel criarCard(String titulo, String valor) {
+        JPanel card = Navegacao.card(16);
 
-        JLabel label = new JLabel(texto);
-
-        label.setForeground(Color.WHITE);
-
-        label.setFont(
-                new Font("Segoe UI", Font.BOLD, 22)
-        );
-
-        label.setBounds(20,y,220,30);
-
-        return label;
-    }
-
-    private JPanel criarCard(
-            String titulo,
-            String valor
-    ) {
-
-        JPanel card = new JPanel();
-
-        card.setLayout(null);
-
-        card.setBackground(Color.WHITE);
-
-        card.setBorder(
-                BorderFactory.createLineBorder(
-                        new Color(220,220,220)
-                )
-        );
-
-        JLabel tituloLabel =
-                new JLabel(titulo);
-
-        tituloLabel.setForeground(
-                new Color(74,99,255)
-        );
-
-        tituloLabel.setFont(
-                new Font("Segoe UI",
-                        Font.BOLD,
-                        16)
-        );
-
-        tituloLabel.setBounds(
-                20,20,180,20
-        );
-
+        JLabel tituloLabel = new JLabel(titulo);
+        tituloLabel.setForeground(Navegacao.AZUL);
+        tituloLabel.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+        tituloLabel.setBounds(14, 10, 110, 17);
         card.add(tituloLabel);
 
-        JLabel valorLabel =
-                new JLabel(valor);
-
-        valorLabel.setFont(
-                new Font("Segoe UI",
-                        Font.BOLD,
-                        32)
-        );
-
-        valorLabel.setBounds(
-                20,50,100,40
-        );
-
+        JLabel valorLabel = new JLabel(valor);
+        valorLabel.setFont(new Font("Segoe UI", Font.BOLD, 21));
+        valorLabel.setForeground(Navegacao.AZUL);
+        valorLabel.setBounds(14, 30, 45, 28);
         card.add(valorLabel);
+
+        JLabel sub = new JLabel(titulo.startsWith("Agendamentos") ? "3 Concluido" : titulo.startsWith("Clientes") ? "+2 esse mes" : "Ativos");
+        sub.setFont(new Font("Segoe UI", Font.PLAIN, 9));
+        sub.setForeground(new Color(75, 160, 80));
+        sub.setBounds(50, 36, 75, 18);
+        card.add(sub);
 
         return card;
     }
 
-    private JPanel criarAgendamento(
-            String horario,
-            String servico
-    ) {
+    private JPanel criarAgendamento(String horario, String tutor, String servico, String status) {
+        JPanel painel = Navegacao.card(14);
+        painel.setBackground(new Color(218, 226, 255));
 
-        JPanel painel = new JPanel();
-
-        painel.setLayout(null);
-
-        painel.setBackground(Color.WHITE);
-
-        painel.setBorder(
-                BorderFactory.createLineBorder(
-                        new Color(220,220,220)
-                )
-        );
-
-        JLabel horarioLabel =
-                new JLabel(horario);
-
-        horarioLabel.setFont(
-                new Font("Segoe UI",
-                        Font.BOLD,
-                        18)
-        );
-
-        horarioLabel.setBounds(
-                20,10,220,25
-        );
-
+        JLabel horarioLabel = new JLabel(horario);
+        horarioLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        horarioLabel.setBounds(15, 8, 125, 18);
         painel.add(horarioLabel);
 
-        JLabel servicoLabel =
-                new JLabel(servico);
+        JLabel tutorLabel = new JLabel(tutor);
+        tutorLabel.setFont(new Font("Segoe UI", Font.PLAIN, 9));
+        tutorLabel.setForeground(new Color(90, 90, 100));
+        tutorLabel.setBounds(68, 26, 120, 14);
+        painel.add(tutorLabel);
 
-        servicoLabel.setForeground(
-                new Color(74,99,255)
-        );
-
-        servicoLabel.setFont(
-                new Font("Segoe UI",
-                        Font.PLAIN,
-                        16)
-        );
-
-        servicoLabel.setBounds(
-                20,38,200,20
-        );
-
+        JLabel servicoLabel = new JLabel(servico);
+        servicoLabel.setForeground(new Color(90, 90, 100));
+        servicoLabel.setFont(new Font("Segoe UI", Font.PLAIN, 9));
+        servicoLabel.setBounds(68, 40, 120, 14);
         painel.add(servicoLabel);
+
+        JLabel statusLabel = new JLabel(status);
+        statusLabel.setFont(new Font("Segoe UI", Font.PLAIN, 9));
+        statusLabel.setForeground("Cancelado".equals(status) ? Color.RED : "Pendente".equals(status) ? new Color(170, 135, 0) : new Color(30, 150, 70));
+        statusLabel.setBounds(180, 22, 58, 15);
+        painel.add(statusLabel);
 
         return painel;
     }
 
     public static void main(String[] args) {
-
-        java.awt.EventQueue.invokeLater(() -> {
-
-            new DashboardTela().setVisible(true);
-
-        });
+        java.awt.EventQueue.invokeLater(() -> new DashboardTela().setVisible(true));
     }
 }
