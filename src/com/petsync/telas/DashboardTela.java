@@ -94,7 +94,7 @@ public class DashboardTela extends JFrame {
 
     private JPanel criarAgendamento(String horario, String tutor, String servico, String status) {
         JPanel painel = Navegacao.card(14);
-        painel.setBackground(new Color(218, 226, 255));
+        painel.setBackground(Navegacao.AZUL_CLARO);
 
         JLabel horarioLabel = new JLabel(horario);
         horarioLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
@@ -115,7 +115,7 @@ public class DashboardTela extends JFrame {
 
         JLabel statusLabel = new JLabel(status);
         statusLabel.setFont(new Font("Segoe UI", Font.PLAIN, 9));
-        statusLabel.setForeground("Cancelado".equals(status) ? Color.RED : "Pendente".equals(status) ? new Color(170, 135, 0) : new Color(30, 150, 70));
+        statusLabel.setForeground("Cancelado".equals(status) ? Color.RED : "Pendente".equals(status) ? new Color(160, 125, 0) : new Color(30, 150, 70));
         statusLabel.setBounds(180, 22, 58, 15);
         painel.add(statusLabel);
 

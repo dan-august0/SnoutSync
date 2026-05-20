@@ -55,11 +55,11 @@ public class NovoClienteTela extends JFrame {
         card.add(comboTipo);
 
         JPanel plano = Navegacao.card(8);
-        plano.setBackground(Navegacao.AZUL_CLARO);
+        plano.setBackground(Navegacao.AMARELO);
         plano.setBounds(480, 168, 145, 55);
         JLabel planoTexto = new JLabel("<html>Plano mensal<br>4 banhos/mes</html>");
         planoTexto.setFont(new Font("Segoe UI", Font.PLAIN, 10));
-        planoTexto.setForeground(Color.WHITE);
+        planoTexto.setForeground(Navegacao.TEXTO);
         planoTexto.setBounds(12, 8, 125, 40);
         plano.add(planoTexto);
         card.add(plano);

@@ -25,8 +25,8 @@ public class LoginTela extends JFrame {
     private static final java.util.logging.Logger logger =
             java.util.logging.Logger.getLogger(LoginTela.class.getName());
 
-    private static final Color COR_ROXO = new Color(168, 177, 255);
-    private static final Color COR_ROXO_BTN = new Color(143, 162, 255);
+    private static final Color COR_ROXO = Navegacao.MENU;
+    private static final Color COR_ROXO_BTN = Navegacao.AZUL;
     private static final Color COR_BRANCO = Color.WHITE;
     private static final Color COR_PLACEHOLDER = new Color(180, 180, 180);
     private static final Color COR_TEXTO = new Color(60, 60, 60);

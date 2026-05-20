@@ -21,13 +21,14 @@ public class Navegacao {
     public static final int LARGURA_MENU = 270;
     public static final int ALTURA_TOPO = 88;
 
-    public static final Color FUNDO = new Color(238, 242, 255);
-    public static final Color MENU = new Color(157, 174, 255);
-    public static final Color MENU_ATIVO = new Color(174, 188, 255);
-    public static final Color AZUL = new Color(91, 117, 255);
-    public static final Color AZUL_CLARO = new Color(198, 208, 255);
+    public static final Color FUNDO = Color.WHITE;
+    public static final Color MENU = new Color(120, 207, 244);
+    public static final Color MENU_ATIVO = new Color(255, 232, 142);
+    public static final Color AZUL = new Color(31, 157, 219);
+    public static final Color AZUL_CLARO = new Color(213, 242, 255);
+    public static final Color AMARELO = new Color(255, 232, 142);
     public static final Color TEXTO = new Color(45, 45, 60);
-    public static final Color CINZA = new Color(243, 243, 243);
+    public static final Color CINZA = new Color(244, 250, 253);
 
     public static void abrir(JFrame atual, JFrame proxima) {
         proxima.setVisible(true);
@@ -87,7 +88,7 @@ public class Navegacao {
             }
         };
         label.setOpaque(false);
-        label.setForeground(Color.WHITE);
+        label.setForeground(texto.equals(telaAtiva) ? TEXTO : Color.WHITE);
         label.setFont(new Font("Segoe UI", Font.PLAIN, 23));
         label.setBounds(0, y, LARGURA_MENU, 56);
         label.setBorder(BorderFactory.createEmptyBorder(0, 58, 0, 0));
@@ -117,26 +118,38 @@ public class Navegacao {
         tituloLabel.setBounds(55, 33, 260, 26);
         topo.add(tituloLabel);
 
-        JLabel circulo = new JLabel("AT");
-        circulo.setHorizontalAlignment(JLabel.CENTER);
-        circulo.setOpaque(true);
-        circulo.setBackground(AZUL);
-        circulo.setForeground(Color.WHITE);
-        circulo.setFont(new Font("Segoe UI", Font.BOLD, 15));
-        circulo.setBounds(610, 28, 35, 35);
-        topo.add(circulo);
-
         JLabel atendente = new JLabel("Atendente");
+        atendente.setHorizontalAlignment(JLabel.RIGHT);
         atendente.setForeground(AZUL);
         atendente.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        atendente.setBounds(650, 24, 110, 20);
+        atendente.setBounds(505, 24, 120, 20);
         topo.add(atendente);
 
         JLabel pet = new JLabel("nome do pet");
+        pet.setHorizontalAlignment(JLabel.RIGHT);
         pet.setForeground(AZUL);
         pet.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-        pet.setBounds(650, 42, 110, 20);
+        pet.setBounds(505, 42, 120, 20);
         topo.add(pet);
+
+        JLabel circulo = new JLabel("AT") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(getBackground());
+                g2.fillOval(0, 0, getWidth(), getHeight());
+                g2.dispose();
+                super.paintComponent(g);
+            }
+        };
+        circulo.setHorizontalAlignment(JLabel.CENTER);
+        circulo.setOpaque(false);
+        circulo.setBackground(AZUL);
+        circulo.setForeground(Color.WHITE);
+        circulo.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        circulo.setBounds(650, 26, 40, 40);
+        topo.add(circulo);
     }
 
     public static JPanel card(int raio) {
