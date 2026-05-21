@@ -15,6 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.WindowConstants;
 
 public class Navegacao {
 
@@ -36,12 +37,13 @@ public class Navegacao {
 
     public static void configurarJanela(JFrame frame, String titulo) {
         frame.setTitle(titulo);
-        frame.setSize(1000, 600);
-        frame.setLocationRelativeTo(null);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setLayout(null);
         frame.setResizable(false);
         frame.getContentPane().setBackground(FUNDO);
+        frame.getContentPane().setPreferredSize(new Dimension(1000, 600));
+        frame.pack();
+        frame.setLocationRelativeTo(null);
     }
 
     public static JPanel criarSidebar(JFrame telaAtual, String telaAtiva) {
@@ -123,19 +125,19 @@ public class Navegacao {
         circulo.setBackground(AZUL);
         circulo.setForeground(Color.WHITE);
         circulo.setFont(new Font("Segoe UI", Font.BOLD, 15));
-        circulo.setBounds(610, 28, 35, 35);
+        circulo.setBounds(560, 28, 35, 35);
         topo.add(circulo);
 
         JLabel atendente = new JLabel("Atendente");
         atendente.setForeground(AZUL);
         atendente.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        atendente.setBounds(650, 24, 110, 20);
+        atendente.setBounds(600, 24, 100, 20);
         topo.add(atendente);
 
         JLabel pet = new JLabel("nome do pet");
         pet.setForeground(AZUL);
         pet.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-        pet.setBounds(650, 42, 110, 20);
+        pet.setBounds(600, 42, 100, 20);
         topo.add(pet);
     }
 

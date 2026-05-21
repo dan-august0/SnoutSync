@@ -22,12 +22,13 @@ public class NovoAgendamentoTela extends JFrame {
 
     public NovoAgendamentoTela() {
         setTitle("PetSync - Novo Agendamento");
-        setSize(1000, 600);
-        setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(null);
         setResizable(false);
         getContentPane().setBackground(Navegacao.FUNDO);
+        getContentPane().setPreferredSize(new java.awt.Dimension(1000, 600));
+        pack();
+        setLocationRelativeTo(null);
 
         JLabel titulo = new JLabel("+ Novo agendamento");
         titulo.setFont(new Font("Segoe UI", Font.PLAIN, 13));

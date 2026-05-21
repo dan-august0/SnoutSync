@@ -21,12 +21,13 @@ public class NovoClienteTela extends JFrame {
 
     public NovoClienteTela() {
         setTitle("PetSync - Novo Cliente");
-        setSize(1000, 600);
-        setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(null);
         setResizable(false);
         getContentPane().setBackground(Navegacao.FUNDO);
+        getContentPane().setPreferredSize(new java.awt.Dimension(1000, 600));
+        pack();
+        setLocationRelativeTo(null);
 
         JButton novo = Navegacao.botaoAzul("+ Novo cliente", 12);
         novo.setBounds(410, 48, 170, 40);
