@@ -34,7 +34,7 @@ public class FinanceiroTela extends JFrame {
 
         JPanel tabela = new JPanel();
         tabela.setLayout(null);
-        tabela.setBackground(new Color(246, 246, 246));
+        tabela.setBackground(Navegacao.CINZA);
         tabela.setBounds(320, 265, 615, 155);
         add(tabela);
 

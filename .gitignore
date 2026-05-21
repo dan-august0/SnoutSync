@@ -22,3 +22,22 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+# Pasta de build
+/build/
+
+# Arquivos compilados Java
+*.class
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/nbdist/
+/.nb-gradle/
+
+# Logs
+*.log
+
+# Arquivos temporários
+*.tmpnbproject/private/
+nbproject/project.properties
