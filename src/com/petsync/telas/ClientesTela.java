@@ -4,6 +4,7 @@ import java.awt.Font;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -65,14 +66,35 @@ public class ClientesTela extends JFrame {
         tabela.add(text("1 pet", 280, y, 80));
         tabela.add(text(c.telefone, 450, y, 140));
         tabela.add(text("Plano".equals(c.tipo) ? "Plano mensal" : "Avulso", 640, y, 120));
-        tabela.add(text("Ver", 820, y, 40));
-        tabela.add(text("Editar", 865, y, 60));
+        JButton editar = Navegacao.botaoSecundario("Editar");
+        editar.setBounds(795, y - 8, 65, 30);
+        editar.addActionListener(e -> new NovoClienteTela(c).setVisible(true));
+        tabela.add(editar);
+
+        JButton excluir = Navegacao.botaoSecundario("Excluir");
+        excluir.setBounds(868, y - 8, 65, 30);
+        excluir.addActionListener(e -> excluirCliente(c));
+        tabela.add(excluir);
     }
 
     private JLabel text(String texto, int x, int y, int w) {
         JLabel label = Navegacao.label(texto, 11, Font.BOLD, Navegacao.TEXTO);
         label.setBounds(x, y, w, 18);
         return label;
+    }
+
+    private void excluirCliente(AppDados.Cliente cliente) {
+        int opcao = JOptionPane.showConfirmDialog(
+                this,
+                "Deseja excluir o cliente " + cliente.tutor + " e seus registros relacionados?",
+                "Confirmar exclusao",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (opcao == JOptionPane.YES_OPTION) {
+            AppDados.excluirCliente(cliente);
+            Navegacao.abrir(this, new ClientesTela());
+        }
     }
 
     public static void main(String[] args) {

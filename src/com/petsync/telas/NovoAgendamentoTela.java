@@ -19,8 +19,15 @@ public class NovoAgendamentoTela extends JFrame {
     private JTextField hora;
     private JTextField valor;
     private JTextField obs;
+    private JComboBox<String> status;
+    private AppDados.Agendamento agendamentoEdicao;
 
     public NovoAgendamentoTela() {
+        this(null);
+    }
+
+    public NovoAgendamentoTela(AppDados.Agendamento agendamentoEdicao) {
+        this.agendamentoEdicao = agendamentoEdicao;
         Navegacao.configurarModal(this, "SnoutSync - Novo Agendamento");
 
         JPanel page = new JPanel(null);
@@ -28,11 +35,11 @@ public class NovoAgendamentoTela extends JFrame {
         page.setBounds(0, 0, Navegacao.APP_W, Navegacao.APP_H);
         add(page);
 
-        JLabel titulo = Navegacao.label("Novo Agendamento", 24, Font.BOLD, Navegacao.TEXTO);
+        JLabel titulo = Navegacao.label(agendamentoEdicao == null ? "Novo Agendamento" : "Editar Agendamento", 24, Font.BOLD, Navegacao.TEXTO);
         titulo.setBounds(45, 32, 300, 30);
         page.add(titulo);
 
-        JLabel sub = Navegacao.label("Agende um novo servico.", 12, Font.PLAIN, Navegacao.TEXTO_SUAVE);
+        JLabel sub = Navegacao.label(agendamentoEdicao == null ? "Agende um novo servico." : "Atualize os dados do agendamento.", 12, Font.PLAIN, Navegacao.TEXTO_SUAVE);
         sub.setBounds(45, 64, 250, 18);
         page.add(sub);
 
@@ -53,7 +60,7 @@ public class NovoAgendamentoTela extends JFrame {
 
         cliente = comboComLabel(esquerda, "Cliente", clientesCombo(), 22, 45, 490);
         pet = comboComLabel(esquerda, "Pet", petsCombo(), 22, 128, 490);
-        servico = comboComLabel(esquerda, "Servico", new String[]{"Banho", "Tosa", "Banho + Tosa", "Consulta", "Vacinacao"}, 22, 211, 490);
+        servico = comboComLabel(esquerda, "Servico", new String[]{"Banho", "Tosa", "Banho + Tosa"}, 22, 211, 490);
         obs = campoComLabel(esquerda, "Observacoes", "Observacoes sobre o agendamento (opcional)", 22, 294, 490);
 
         JPanel direita = Navegacao.card();
@@ -64,16 +71,19 @@ public class NovoAgendamentoTela extends JFrame {
         hora = campoComLabel(direita, "Hora", "10:00", 282, 45, 230);
         profissional = comboComLabel(direita, "Profissional", new String[]{"Selecione o profissional", "Leonardo", "Maria", "Carlos"}, 22, 128, 490);
         valor = campoComLabel(direita, "Valor", "R$ 0,00", 22, 211, 490);
+        status = comboComLabel(direita, "Status", new String[]{"Confirmado", "Pendente", "Cancelado"}, 22, 294, 490);
 
         JButton cancelar = Navegacao.botaoSecundario("Cancelar");
         cancelar.setBounds(785, 625, 135, 38);
         cancelar.addActionListener(e -> dispose());
         page.add(cancelar);
 
-        JButton salvar = Navegacao.botaoPrimario("Salvar Agendamento");
+        JButton salvar = Navegacao.botaoPrimario(agendamentoEdicao == null ? "Salvar Agendamento" : "Atualizar Agendamento");
         salvar.setBounds(940, 625, 180, 38);
         salvar.addActionListener(e -> salvar());
         page.add(salvar);
+
+        preencherEdicao();
     }
 
     private String[] clientesCombo() {
@@ -127,17 +137,37 @@ public class NovoAgendamentoTela extends JFrame {
             return;
         }
 
-        AppDados.adicionarAgendamento(new AppDados.Agendamento(
+        AppDados.Agendamento agendamento = new AppDados.Agendamento(
+                agendamentoEdicao == null ? 0 : agendamentoEdicao.id,
                 clienteSelecionado,
                 petSelecionado,
                 servico.getSelectedItem().toString(),
                 data.getText().trim(),
                 hora.getText().trim(),
-                "Confirmado"
-        ));
+                status.getSelectedItem().toString()
+        );
 
-        JOptionPane.showMessageDialog(this, "Agendamento salvo com sucesso.");
+        if (agendamentoEdicao == null) {
+            AppDados.adicionarAgendamento(agendamento);
+        } else {
+            AppDados.atualizarAgendamento(agendamento);
+        }
+
+        JOptionPane.showMessageDialog(this, agendamentoEdicao == null ? "Agendamento salvo com sucesso." : "Agendamento atualizado com sucesso.");
         Navegacao.abrir(this, new AgendamentosTela());
+    }
+
+    private void preencherEdicao() {
+        if (agendamentoEdicao == null) {
+            return;
+        }
+
+        cliente.setSelectedItem(agendamentoEdicao.cliente);
+        pet.setSelectedItem(agendamentoEdicao.pet);
+        servico.setSelectedItem(agendamentoEdicao.servico);
+        data.setText(agendamentoEdicao.data);
+        hora.setText(agendamentoEdicao.horario);
+        status.setSelectedItem(agendamentoEdicao.status);
     }
 
     public static void main(String[] args) {

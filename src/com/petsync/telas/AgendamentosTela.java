@@ -6,6 +6,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -81,8 +82,15 @@ public class AgendamentosTela extends JFrame {
         JPanel status = status(a.status);
         status.setBounds(645, y - 4, 82, 24);
         tabela.add(status);
-        tabela.add(text("Editar", 820, y, 50));
-        tabela.add(text("Excluir", 875, y, 55));
+        JButton editar = Navegacao.botaoSecundario("Editar");
+        editar.setBounds(795, y - 8, 65, 30);
+        editar.addActionListener(e -> new NovoAgendamentoTela(a).setVisible(true));
+        tabela.add(editar);
+
+        JButton excluir = Navegacao.botaoSecundario("Excluir");
+        excluir.setBounds(868, y - 8, 65, 30);
+        excluir.addActionListener(e -> excluirAgendamento(a));
+        tabela.add(excluir);
     }
 
     private JLabel text(String texto, int x, int y, int w) {
@@ -99,6 +107,20 @@ public class AgendamentosTela extends JFrame {
             return Navegacao.badge("Cancelado", new Color(255, 230, 225), Color.RED);
         }
         return Navegacao.badge("Confirmado", new Color(220, 248, 232), Navegacao.VERDE);
+    }
+
+    private void excluirAgendamento(AppDados.Agendamento agendamento) {
+        int opcao = JOptionPane.showConfirmDialog(
+                this,
+                "Deseja excluir este agendamento?",
+                "Confirmar exclusao",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (opcao == JOptionPane.YES_OPTION) {
+            AppDados.excluirAgendamento(agendamento);
+            Navegacao.abrir(this, new AgendamentosTela());
+        }
     }
 
     public static void main(String[] args) {

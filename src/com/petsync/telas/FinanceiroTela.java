@@ -6,7 +6,10 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 public class FinanceiroTela extends JFrame {
@@ -16,17 +19,23 @@ public class FinanceiroTela extends JFrame {
 
         JButton relatorio = Navegacao.botaoSecundario("Relatorio");
         relatorio.setBounds(720, 28, 105, 34);
+        relatorio.addActionListener(e -> mostrarRelatorio());
         page.add(relatorio);
 
         JButton novo = Navegacao.botaoPrimario("+ Novo Lancamento");
         novo.setBounds(835, 28, 138, 34);
+        novo.addActionListener(e -> Navegacao.mensagem(this, "Os lancamentos sao gerados automaticamente pelos agendamentos cadastrados."));
         page.add(novo);
 
-        int faturamento = AppDados.faturamentoEstimado();
-        page.add(metric("Receitas (mes)", "R$ " + (faturamento + 2590) + ",00", "+10% vs mes anterior", Navegacao.VERDE, 28, 105));
-        page.add(metric("Despesas (mes)", "R$ 2.590,00", "-6% vs mes anterior", Color.RED, 238, 105));
-        page.add(metric("Lucro (mes)", "R$ " + faturamento + ",00", "+29% vs mes anterior", Navegacao.VERDE, 448, 105));
-        page.add(metric("Total em aberto", "R$ 1.250,00", "3 titulos", Navegacao.LARANJA, 658, 105));
+        int receitas = AppDados.faturamentoEstimado();
+        int despesas = AppDados.despesasEstimadas();
+        int lucro = AppDados.lucroEstimado();
+        int aberto = AppDados.totalEmAberto();
+
+        page.add(metric("Receitas (mes)", moeda(receitas), AppDados.servicosRealizados() + " servicos", Navegacao.VERDE, 28, 105));
+        page.add(metric("Despesas (mes)", moeda(despesas), "Estimativa operacional", Color.RED, 238, 105));
+        page.add(metric("Lucro (mes)", moeda(lucro), lucro >= 0 ? "Resultado positivo" : "Resultado negativo", lucro >= 0 ? Navegacao.VERDE : Color.RED, 448, 105));
+        page.add(metric("Total em aberto", moeda(aberto), AppDados.totalPorStatus("Pendente") + " pendentes", Navegacao.LARANJA, 658, 105));
 
         JPanel fluxo = Navegacao.card();
         fluxo.setBounds(28, 220, 420, 220);
@@ -37,12 +46,14 @@ public class FinanceiroTela extends JFrame {
         for (int i = 0; i < 8; i++) {
             JPanel barra = new JPanel();
             barra.setBackground(Navegacao.VERDE);
-            barra.setBounds(35 + i * 45, 160 - (i % 4) * 22, 18, 35 + (i % 4) * 22);
+            int alturaReceita = Math.max(18, (receitas / 20) % 95 + (i % 3) * 8);
+            barra.setBounds(35 + i * 45, 185 - alturaReceita, 18, alturaReceita);
             fluxo.add(barra);
 
             JPanel despesa = new JPanel();
             despesa.setBackground(new Color(255, 111, 86));
-            despesa.setBounds(58 + i * 45, 175 - (i % 3) * 8, 10, 20 + (i % 3) * 8);
+            int alturaDespesa = Math.max(12, (despesas / 25) % 55 + (i % 2) * 5);
+            despesa.setBounds(58 + i * 45, 185 - alturaDespesa, 10, alturaDespesa);
             fluxo.add(despesa);
         }
 
@@ -52,13 +63,13 @@ public class FinanceiroTela extends JFrame {
         JLabel ct = Navegacao.label("Categorias de Despesas", 14, Font.BOLD, Navegacao.TEXTO);
         ct.setBounds(18, 18, 220, 22);
         categorias.add(ct);
-        JLabel donut = Navegacao.circle("40%", 26, Navegacao.AZUL, Navegacao.AZUL_CLARO);
+        JLabel donut = Navegacao.circle(percentualDespesas(receitas, despesas) + "%", 24, Navegacao.AZUL, Navegacao.AZUL_CLARO);
         donut.setBounds(65, 65, 95, 95);
         categorias.add(donut);
-        categorias.add(info("Produtos", "40%", 165, 70, Navegacao.AZUL));
-        categorias.add(info("Salarios", "30%", 165, 96, Navegacao.VERDE));
+        categorias.add(info("Operacional", "45%", 165, 70, Navegacao.AZUL));
+        categorias.add(info("Produtos", "30%", 165, 96, Navegacao.VERDE));
         categorias.add(info("Aluguel", "15%", 165, 122, Navegacao.LARANJA));
-        categorias.add(info("Outros", "15%", 165, 148, Navegacao.TEXTO_SUAVE));
+        categorias.add(info("Outros", "10%", 165, 148, Navegacao.TEXTO_SUAVE));
 
         JPanel tabela = Navegacao.card();
         tabela.setBounds(28, 465, 944, 210);
@@ -74,9 +85,20 @@ public class FinanceiroTela extends JFrame {
         tabela.add(cat);
 
         cabecalho(tabela);
-        linha(tabela, "20/05/2026", "Banho e Tosa - Rex", "Servicos", "Receita", "R$ 120,00", "Pago", 96);
-        linha(tabela, "20/05/2026", "Consulta - Luna", "Servicos", "Receita", "R$ 80,00", "Pago", 126);
-        linha(tabela, "19/05/2026", "Aluguel", "Aluguel", "Despesa", "R$ 1.200,00", "Pago", 156);
+        int y = 96;
+        int limite = Math.min(4, AppDados.agendamentos.size());
+        for (int i = 0; i < limite; i++) {
+            AppDados.Agendamento agendamento = AppDados.agendamentos.get(i);
+            linha(tabela,
+                    agendamento.data,
+                    agendamento.servico + " - " + agendamento.pet,
+                    "Servicos",
+                    "Cancelado".equals(agendamento.status) ? "Sem receita" : "Receita",
+                    moeda("Cancelado".equals(agendamento.status) ? 0 : AppDados.valorServico(agendamento.servico)),
+                    "Pendente".equals(agendamento.status) ? "Aberto" : "Confirmado".equals(agendamento.status) ? "Pago" : "Cancelado",
+                    y);
+            y += 30;
+        }
     }
 
     private JPanel metric(String titulo, String valor, String detalhe, Color cor, int x, int y) {
@@ -126,6 +148,26 @@ public class FinanceiroTela extends JFrame {
         JLabel label = Navegacao.label(texto, 11, Font.BOLD, Navegacao.TEXTO);
         label.setBounds(x, y, w, 18);
         return label;
+    }
+
+    private String moeda(int valor) {
+        return "R$ " + valor + ",00";
+    }
+
+    private int percentualDespesas(int receitas, int despesas) {
+        if (receitas <= 0) {
+            return 0;
+        }
+        return Math.min(99, (int) Math.round((despesas * 100.0) / receitas));
+    }
+
+    private void mostrarRelatorio() {
+        JTextArea area = new JTextArea(AppDados.relatorioFinanceiro());
+        area.setEditable(false);
+        area.setFont(new Font("Consolas", Font.PLAIN, 12));
+        JScrollPane scroll = new JScrollPane(area);
+        scroll.setPreferredSize(new java.awt.Dimension(560, 360));
+        JOptionPane.showMessageDialog(this, scroll, "Relatorio Financeiro", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public static void main(String[] args) {

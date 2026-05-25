@@ -14,7 +14,7 @@ public class DashboardTela extends JFrame {
 
         int agendamentos = AppDados.agendamentosHoje();
         int clientes = AppDados.clientes.size();
-        int servicos = AppDados.agendamentos.size() * 2;
+        int servicos = AppDados.servicosRealizados();
         int faturamento = AppDados.faturamentoEstimado();
 
         page.add(metric("Agendamentos hoje", String.valueOf(agendamentos), "+12% vs ontem", "1", 28, 105));
@@ -32,6 +32,13 @@ public class DashboardTela extends JFrame {
 
         JLabel verTodos = Navegacao.label("Ver todos", 11, Font.BOLD, Navegacao.AZUL);
         verTodos.setBounds(450, 14, 60, 22);
+        verTodos.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        verTodos.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                Navegacao.abrir(DashboardTela.this, new AgendamentosTela());
+            }
+        });
         agenda.add(verTodos);
 
         int y = 52;
@@ -68,7 +75,7 @@ public class DashboardTela extends JFrame {
 
         page.add(action("Novo Agendamento", "Agendar um servico", 28, 440, () -> new NovoAgendamentoTela().setVisible(true)));
         page.add(action("Novo Cliente", "Cadastrar cliente", 238, 440, () -> new NovoClienteTela().setVisible(true)));
-        page.add(action("Novo Servico", "Adicionar servico", 448, 440, () -> Navegacao.mensagem(this, "Cadastro de servico em desenvolvimento.")));
+        page.add(action("Ver Financeiro", "Receitas e relatorios", 448, 440, () -> Navegacao.abrir(this, new FinanceiroTela())));
         page.add(action("Lancamento Financeiro", "Adicionar receita/despesa", 658, 440, () -> new FinanceiroTela().setVisible(true)));
     }
 

@@ -20,8 +20,15 @@ public class NovoClienteTela extends JFrame {
     private JTextField raca;
     private JComboBox<String> especie;
     private JComboBox<String> sexo;
+    private JComboBox<String> tipo;
+    private AppDados.Cliente clienteEdicao;
 
     public NovoClienteTela() {
+        this(null);
+    }
+
+    public NovoClienteTela(AppDados.Cliente clienteEdicao) {
+        this.clienteEdicao = clienteEdicao;
         Navegacao.configurarModal(this, "SnoutSync - Novo Cliente");
 
         JPanel page = new JPanel(null);
@@ -29,11 +36,11 @@ public class NovoClienteTela extends JFrame {
         page.setBounds(0, 0, Navegacao.APP_W, Navegacao.APP_H);
         add(page);
 
-        JLabel titulo = Navegacao.label("Novo Cliente", 24, Font.BOLD, Navegacao.TEXTO);
+        JLabel titulo = Navegacao.label(clienteEdicao == null ? "Novo Cliente" : "Editar Cliente", 24, Font.BOLD, Navegacao.TEXTO);
         titulo.setBounds(45, 32, 250, 30);
         page.add(titulo);
 
-        JLabel sub = Navegacao.label("Cadastre um novo cliente.", 12, Font.PLAIN, Navegacao.TEXTO_SUAVE);
+        JLabel sub = Navegacao.label(clienteEdicao == null ? "Cadastre um novo cliente." : "Atualize os dados do cliente.", 12, Font.PLAIN, Navegacao.TEXTO_SUAVE);
         sub.setBounds(45, 64, 250, 18);
         page.add(sub);
 
@@ -58,7 +65,12 @@ public class NovoClienteTela extends JFrame {
 
         nome = campoComLabel(dados, "Nome completo", "Digite o nome completo", 22, 68, 450);
         telefone = campoComLabel(dados, "Telefone", "(11) 90000-0000", 22, 160, 210);
-        email = campoComLabel(dados, "E-mail", "email@exemplo.com", 260, 160, 210);
+        JLabel tipoLabel = Navegacao.label("Tipo", 12, Font.BOLD, Navegacao.TEXTO);
+        tipoLabel.setBounds(260, 160, 210, 18);
+        dados.add(tipoLabel);
+        tipo = new JComboBox<>(new String[]{"Plano", "Avulso"});
+        tipo.setBounds(260, 184, 210, 38);
+        dados.add(tipo);
         endereco = campoComLabel(dados, "Endereco", "Rua, numero, bairro, cidade - UF", 22, 252, 450);
         JTextField obs = campoComLabel(dados, "Observacoes", "Observacoes sobre o cliente (opcional)", 22, 344, 450);
 
@@ -102,10 +114,12 @@ public class NovoClienteTela extends JFrame {
         cancelar.addActionListener(e -> dispose());
         page.add(cancelar);
 
-        JButton salvar = Navegacao.botaoPrimario("Salvar Cliente");
+        JButton salvar = Navegacao.botaoPrimario(clienteEdicao == null ? "Salvar Cliente" : "Atualizar Cliente");
         salvar.setBounds(940, 625, 180, 38);
         salvar.addActionListener(e -> salvar());
         page.add(salvar);
+
+        preencherEdicao();
     }
 
     private JTextField campoComLabel(JPanel panel, String label, String placeholder, int x, int y, int w) {
@@ -124,16 +138,36 @@ public class NovoClienteTela extends JFrame {
             return;
         }
 
-        AppDados.adicionarCliente(new AppDados.Cliente(
+        AppDados.Cliente cliente = new AppDados.Cliente(
+                clienteEdicao == null ? 0 : clienteEdicao.id,
+                clienteEdicao == null ? 0 : clienteEdicao.petId,
                 nome.getText().trim(),
                 telefone.getText().trim(),
                 pet.getText().trim(),
                 raca.getText().trim(),
-                "Plano"
-        ));
+                tipo.getSelectedItem().toString()
+        );
 
-        JOptionPane.showMessageDialog(this, "Cliente salvo com sucesso.");
+        if (clienteEdicao == null) {
+            AppDados.adicionarCliente(cliente);
+        } else {
+            AppDados.atualizarCliente(cliente);
+        }
+
+        JOptionPane.showMessageDialog(this, clienteEdicao == null ? "Cliente salvo com sucesso." : "Cliente atualizado com sucesso.");
         Navegacao.abrir(this, new ClientesTela());
+    }
+
+    private void preencherEdicao() {
+        if (clienteEdicao == null) {
+            return;
+        }
+
+        nome.setText(clienteEdicao.tutor);
+        telefone.setText(clienteEdicao.telefone);
+        pet.setText(clienteEdicao.pet);
+        raca.setText(clienteEdicao.raca);
+        tipo.setSelectedItem(clienteEdicao.tipo);
     }
 
     public static void main(String[] args) {

@@ -1,5 +1,7 @@
 package com.petsync.telas;
 
+import com.petsync.model.Usuario;
+import com.petsync.service.AuthService;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -22,6 +24,7 @@ public class LoginTela extends JFrame {
 
     private JTextField txtUsuario;
     private JPasswordField txtSenha;
+    private final AuthService authService = new AuthService();
 
     public LoginTela() {
         setTitle("SnoutSync - Login");
@@ -181,7 +184,23 @@ public class LoginTela extends JFrame {
             return;
         }
 
-        Navegacao.abrir(this, new DashboardTela());
+        try {
+            Usuario usuarioLogado = authService.login(usuario, senha);
+
+            if (usuarioLogado == null) {
+                JOptionPane.showMessageDialog(this, "Usuario ou senha invalidos.");
+                return;
+            }
+
+            Navegacao.abrir(this, new DashboardTela());
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Nao foi possivel conectar ao banco de dados.\n"
+                    + "Confira se o MySQL esta aberto e se o banco petsync foi criado.\n\n"
+                    + "Detalhe: " + ex.getMessage()
+            );
+        }
     }
 
     private void recuperarSenha() {

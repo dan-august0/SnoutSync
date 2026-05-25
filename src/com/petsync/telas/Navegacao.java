@@ -86,7 +86,7 @@ public class Navegacao {
         menu.add(menuItem("Agendamentos", "Agendamentos", ativa, 230, () -> abrir(atual, new AgendamentosTela())));
         menu.add(menuItem("Clientes e Pets", "Clientes e Pets", ativa, 280, () -> abrir(atual, new ClientesTela())));
         menu.add(menuItem("Financeiro", "Financeiro", ativa, 330, () -> abrir(atual, new FinanceiroTela())));
-        menu.add(menuItem("Configuracoes", "Configuracoes", ativa, 600, () -> mensagem(atual, "Configuracoes em desenvolvimento.")));
+        menu.add(menuItem("Configuracoes", "Configuracoes", ativa, 600, () -> mensagem(atual, "Sistema configurado para usar MySQL via JDBC.")));
         menu.add(menuItem("Sair", "Sair", ativa, 650, () -> abrir(atual, new LoginTela())));
 
         return menu;
