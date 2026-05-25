@@ -15,190 +15,257 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
 
 public class Navegacao {
 
-    public static final int LARGURA_MENU = 270;
-    public static final int ALTURA_TOPO = 88;
+    public static final int APP_W = 1200;
+    public static final int APP_H = 720;
+    public static final int MENU_W = 190;
+    public static final int GAP = 18;
 
-    public static final Color FUNDO = Color.WHITE;
-    public static final Color MENU = new Color(120, 207, 244);
-    public static final Color MENU_ATIVO = new Color(255, 232, 142);
-    public static final Color AZUL = new Color(31, 157, 219);
-    public static final Color AZUL_CLARO = new Color(213, 242, 255);
-    public static final Color AMARELO = new Color(255, 232, 142);
-    public static final Color TEXTO = new Color(45, 45, 60);
-    public static final Color CINZA = new Color(244, 250, 253);
+    public static final Color FUNDO = new Color(246, 248, 255);
+    public static final Color AZUL = new Color(83, 111, 245);
+    public static final Color AZUL_2 = new Color(111, 132, 250);
+    public static final Color AZUL_CLARO = new Color(232, 237, 255);
+    public static final Color MENU_ATIVO = new Color(132, 153, 255);
+    public static final Color TEXTO = new Color(20, 33, 70);
+    public static final Color TEXTO_SUAVE = new Color(100, 112, 145);
+    public static final Color BORDA = new Color(224, 229, 242);
+    public static final Color VERDE = new Color(34, 177, 99);
+    public static final Color LARANJA = new Color(245, 143, 36);
+
+    public static void configurarJanela(JFrame frame, String titulo) {
+        frame.setTitle(titulo.replace("PetSync", "SnoutSync"));
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.setLayout(null);
+        frame.setResizable(false);
+        frame.getContentPane().setBackground(FUNDO);
+        frame.getContentPane().setPreferredSize(new Dimension(APP_W, APP_H));
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+    }
+
+    public static void configurarModal(JFrame frame, String titulo) {
+        frame.setTitle(titulo.replace("PetSync", "SnoutSync"));
+        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        frame.setLayout(null);
+        frame.setResizable(false);
+        frame.getContentPane().setBackground(FUNDO);
+        frame.getContentPane().setPreferredSize(new Dimension(APP_W, APP_H));
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+    }
 
     public static void abrir(JFrame atual, JFrame proxima) {
         proxima.setVisible(true);
         atual.dispose();
     }
 
-    public static void configurarJanela(JFrame frame, String titulo) {
-        frame.setTitle(titulo);
-        frame.setSize(1000, 600);
-        frame.setLocationRelativeTo(null);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLayout(null);
-        frame.setResizable(false);
-        frame.getContentPane().setBackground(FUNDO);
+    public static JPanel sidebar(JFrame atual, String ativa) {
+        JPanel menu = new GradientPanel();
+        menu.setLayout(null);
+        menu.setBounds(0, 0, MENU_W, APP_H);
+
+        JLabel logoIcon = circle("P", 54, Color.WHITE, AZUL);
+        logoIcon.setBounds(65, 35, 60, 60);
+        menu.add(logoIcon);
+
+        JLabel nome = label("SnoutSync", 24, Font.BOLD, Color.WHITE);
+        nome.setHorizontalAlignment(SwingConstants.CENTER);
+        nome.setBounds(20, 100, 150, 34);
+        menu.add(nome);
+
+        JLabel sub = label("PetShop", 12, Font.PLAIN, Color.WHITE);
+        sub.setHorizontalAlignment(SwingConstants.CENTER);
+        sub.setBounds(20, 132, 150, 18);
+        menu.add(sub);
+
+        menu.add(menuItem("Dashboard", "Dashboard", ativa, 180, () -> abrir(atual, new DashboardTela())));
+        menu.add(menuItem("Agendamentos", "Agendamentos", ativa, 230, () -> abrir(atual, new AgendamentosTela())));
+        menu.add(menuItem("Clientes e Pets", "Clientes e Pets", ativa, 280, () -> abrir(atual, new ClientesTela())));
+        menu.add(menuItem("Financeiro", "Financeiro", ativa, 330, () -> abrir(atual, new FinanceiroTela())));
+        menu.add(menuItem("Configuracoes", "Configuracoes", ativa, 600, () -> mensagem(atual, "Configuracoes em desenvolvimento.")));
+        menu.add(menuItem("Sair", "Sair", ativa, 650, () -> abrir(atual, new LoginTela())));
+
+        return menu;
     }
 
-    public static JPanel criarSidebar(JFrame telaAtual, String telaAtiva) {
-        JPanel sidebar = new JPanel();
-        sidebar.setLayout(null);
-        sidebar.setBackground(MENU);
-        sidebar.setBounds(0, 0, LARGURA_MENU, 600);
-
-        JLabel logo = new JLabel("SnoutSync");
-        logo.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        logo.setForeground(Color.WHITE);
-        logo.setBounds(80, 30, 160, 35);
-        sidebar.add(logo);
-
-        JLabel sub = new JLabel("Pet&shop");
-        sub.setForeground(Color.WHITE);
-        sub.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-        sub.setBounds(118, 60, 100, 20);
-        sidebar.add(sub);
-
-        sidebar.add(itemMenu("Dashboard", 140, telaAtiva, () -> abrir(telaAtual, new DashboardTela())));
-        sidebar.add(itemMenu("Agendamentos", 210, telaAtiva, () -> abrir(telaAtual, new AgendamentosTela())));
-        sidebar.add(itemMenu("Clientes & Pets", 280, telaAtiva, () -> abrir(telaAtual, new ClientesTela())));
-        sidebar.add(itemMenu("Financeiro", 350, telaAtiva, () -> abrir(telaAtual, new FinanceiroTela())));
-
-        JButton novoCliente = botaoAzul("+ Novo cliente", 13);
-        novoCliente.setBounds(70, 530, 120, 34);
-        novoCliente.addActionListener(e -> new NovoClienteTela().setVisible(true));
-        sidebar.add(novoCliente);
-
-        return sidebar;
-    }
-
-    public static JLabel itemMenu(String texto, int y, String telaAtiva, Runnable acao) {
-        JLabel label = new JLabel(texto) {
+    private static JLabel menuItem(String texto, String id, String ativa, int y, Runnable acao) {
+        JLabel item = new JLabel(texto) {
             @Override
             protected void paintComponent(Graphics g) {
-                if (texto.equals(telaAtiva)) {
-                    g.setColor(MENU_ATIVO);
-                    g.fillRect(0, 0, getWidth(), getHeight());
+                if (id.equals(ativa)) {
+                    Graphics2D g2 = (Graphics2D) g.create();
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2.setColor(MENU_ATIVO);
+                    g2.fillRoundRect(16, 3, getWidth() - 32, getHeight() - 6, 10, 10);
+                    g2.dispose();
                 }
                 super.paintComponent(g);
             }
         };
-        label.setOpaque(false);
-        label.setForeground(texto.equals(telaAtiva) ? TEXTO : Color.WHITE);
-        label.setFont(new Font("Segoe UI", Font.PLAIN, 23));
-        label.setBounds(0, y, LARGURA_MENU, 56);
-        label.setBorder(BorderFactory.createEmptyBorder(0, 58, 0, 0));
-        label.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        if (!texto.equals(telaAtiva)) {
-            label.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
+        item.setForeground(Color.WHITE);
+        item.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        item.setBounds(0, y, MENU_W, 40);
+        item.setBorder(BorderFactory.createEmptyBorder(0, 45, 0, 0));
+        item.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        item.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (!id.equals(ativa)) {
                     acao.run();
                 }
-            });
-        }
+            }
+        });
+        return item;
+    }
+
+    public static JPanel page(JFrame frame, String ativa, String titulo, String subtitulo) {
+        configurarJanela(frame, "SnoutSync - " + titulo);
+        frame.add(sidebar(frame, ativa));
+
+        JPanel content = new JPanel(null);
+        content.setOpaque(false);
+        content.setBounds(MENU_W, 0, APP_W - MENU_W, APP_H);
+        frame.add(content);
+
+        JLabel title = label(titulo, 24, Font.BOLD, TEXTO);
+        title.setBounds(28, 28, 360, 30);
+        content.add(title);
+
+        JLabel subtitle = label(subtitulo, 12, Font.PLAIN, TEXTO_SUAVE);
+        subtitle.setBounds(28, 58, 400, 20);
+        content.add(subtitle);
+
+        JLabel avatar = circle("L", 34, Color.WHITE, AZUL);
+        avatar.setBounds(860, 28, 38, 38);
+        content.add(avatar);
+
+        JLabel nome = label("Leonardo", 12, Font.BOLD, TEXTO);
+        nome.setBounds(906, 28, 80, 18);
+        content.add(nome);
+
+        JLabel cargo = label("Administrador", 10, Font.PLAIN, TEXTO_SUAVE);
+        cargo.setBounds(906, 45, 95, 18);
+        content.add(cargo);
+
+        return content;
+    }
+
+    public static JPanel card() {
+        JPanel card = new RoundedPanel(14, Color.WHITE);
+        card.setLayout(null);
+        card.setBorder(BorderFactory.createLineBorder(BORDA));
+        return card;
+    }
+
+    public static JPanel badge(String texto, Color corFundo, Color corTexto) {
+        JPanel badge = new RoundedPanel(18, corFundo);
+        badge.setLayout(null);
+        JLabel lbl = label(texto, 11, Font.BOLD, corTexto);
+        lbl.setHorizontalAlignment(SwingConstants.CENTER);
+        lbl.setBounds(0, 2, 82, 20);
+        badge.add(lbl);
+        return badge;
+    }
+
+    public static JLabel label(String texto, int tamanho, int estilo, Color cor) {
+        JLabel label = new JLabel(texto);
+        label.setFont(new Font("Segoe UI", estilo, tamanho));
+        label.setForeground(cor);
         return label;
     }
 
-    public static void adicionarTopo(JFrame tela, String titulo) {
-        JPanel topo = new JPanel();
-        topo.setLayout(null);
-        topo.setBackground(Color.WHITE);
-        topo.setBounds(LARGURA_MENU, 0, 730, ALTURA_TOPO);
-        tela.add(topo);
-
-        JLabel tituloLabel = new JLabel(titulo);
-        tituloLabel.setFont(new Font("Segoe UI", Font.PLAIN, 18));
-        tituloLabel.setForeground(AZUL);
-        tituloLabel.setBounds(55, 33, 260, 26);
-        topo.add(tituloLabel);
-
-        JLabel atendente = new JLabel("Atendente");
-        atendente.setHorizontalAlignment(JLabel.RIGHT);
-        atendente.setForeground(AZUL);
-        atendente.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        atendente.setBounds(505, 24, 120, 20);
-        topo.add(atendente);
-
-        JLabel pet = new JLabel("nome do pet");
-        pet.setHorizontalAlignment(JLabel.RIGHT);
-        pet.setForeground(AZUL);
-        pet.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-        pet.setBounds(505, 42, 120, 20);
-        topo.add(pet);
-
-        JLabel circulo = new JLabel("AT") {
+    public static JLabel circle(String texto, int fonte, Color textoCor, Color fundo) {
+        JLabel label = new JLabel(texto) {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(getBackground());
+                g2.setColor(fundo);
                 g2.fillOval(0, 0, getWidth(), getHeight());
                 g2.dispose();
                 super.paintComponent(g);
             }
         };
-        circulo.setHorizontalAlignment(JLabel.CENTER);
-        circulo.setOpaque(false);
-        circulo.setBackground(AZUL);
-        circulo.setForeground(Color.WHITE);
-        circulo.setFont(new Font("Segoe UI", Font.BOLD, 15));
-        circulo.setBounds(650, 26, 40, 40);
-        topo.add(circulo);
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+        label.setVerticalAlignment(SwingConstants.CENTER);
+        label.setForeground(textoCor);
+        label.setFont(new Font("Segoe UI", Font.BOLD, fonte));
+        return label;
     }
 
-    public static JPanel card(int raio) {
-        JPanel painel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(getBackground());
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), raio, raio);
-                g2.dispose();
-                super.paintComponent(g);
-            }
-        };
-        painel.setOpaque(false);
-        painel.setLayout(null);
-        painel.setBackground(Color.WHITE);
-        return painel;
-    }
-
-    public static JTextField campo(String texto) {
-        JTextField campo = new JTextField(texto);
-        campo.setBorder(BorderFactory.createEmptyBorder(6, 12, 6, 12));
-        campo.setBackground(CINZA);
-        campo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        campo.setForeground(new Color(120, 120, 120));
+    public static JTextField campo(String placeholder) {
+        JTextField campo = new JTextField(placeholder);
+        campo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        campo.setForeground(TEXTO_SUAVE);
+        campo.setBackground(Color.WHITE);
+        campo.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(BORDA),
+                BorderFactory.createEmptyBorder(8, 12, 8, 12)
+        ));
         return campo;
     }
 
-    public static JButton botaoAzul(String texto, int tamanho) {
-        JButton botao = new JButton(texto);
-        botao.setPreferredSize(new Dimension(120, 34));
-        botao.setBackground(AZUL);
-        botao.setForeground(Color.WHITE);
-        botao.setBorderPainted(false);
-        botao.setFocusPainted(false);
-        botao.setFont(new Font("Segoe UI", Font.PLAIN, tamanho));
-        botao.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        return botao;
+    public static JButton botaoPrimario(String texto) {
+        JButton btn = new JButton(texto);
+        btn.setBackground(AZUL);
+        btn.setForeground(Color.WHITE);
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        btn.setBorderPainted(false);
+        btn.setFocusPainted(false);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        return btn;
     }
 
-    public static JButton botaoCinza(String texto) {
-        JButton botao = new JButton(texto);
-        botao.setBackground(new Color(232, 232, 232));
-        botao.setForeground(TEXTO);
-        botao.setBorderPainted(false);
-        botao.setFocusPainted(false);
-        botao.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        botao.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        return botao;
+    public static JButton botaoSecundario(String texto) {
+        JButton btn = new JButton(texto);
+        btn.setBackground(Color.WHITE);
+        btn.setForeground(TEXTO);
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        btn.setBorder(BorderFactory.createLineBorder(BORDA));
+        btn.setFocusPainted(false);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        return btn;
+    }
+
+    public static void mensagem(JFrame frame, String texto) {
+        javax.swing.JOptionPane.showMessageDialog(frame, texto);
+    }
+
+    public static class RoundedPanel extends JPanel {
+        private final int radius;
+        private final Color color;
+
+        public RoundedPanel(int radius, Color color) {
+            this.radius = radius;
+            this.color = color;
+            setOpaque(false);
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(color);
+            g2.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, radius, radius);
+            g2.dispose();
+            super.paintComponent(g);
+        }
+    }
+
+    private static class GradientPanel extends JPanel {
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            java.awt.GradientPaint gp = new java.awt.GradientPaint(0, 0, AZUL_2, 0, getHeight(), AZUL);
+            g2.setPaint(gp);
+            g2.fillRect(0, 0, getWidth(), getHeight());
+            g2.dispose();
+        }
     }
 }

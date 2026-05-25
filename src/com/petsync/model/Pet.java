@@ -68,8 +68,4 @@ public class Pet {
     public void setPorte(String porte) {
         this.porte = porte;
     }
-
-    public void setClienteId(int clienteId) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
 }

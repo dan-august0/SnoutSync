@@ -1,8 +1,7 @@
 package com.petsync.telas;
 
-import java.awt.Color;
 import java.awt.Font;
-import javax.swing.JComboBox;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -11,71 +10,69 @@ import javax.swing.JTextField;
 public class ClientesTela extends JFrame {
 
     public ClientesTela() {
-        Navegacao.configurarJanela(this, "PetSync - Clientes");
-        add(Navegacao.criarSidebar(this, "Clientes & Pets"));
-        Navegacao.adicionarTopo(this, "Clientes & Pets");
+        JPanel page = Navegacao.page(this, "Clientes e Pets", "Clientes e Pets", "Gerencie seus clientes e seus pets.");
 
-        JLabel titulo = new JLabel("Lista de Clientes");
-        titulo.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        titulo.setForeground(Navegacao.AZUL);
-        titulo.setBounds(310, 112, 180, 22);
-        add(titulo);
+        JButton novo = Navegacao.botaoPrimario("+ Novo Cliente");
+        novo.setBounds(820, 28, 150, 34);
+        novo.addActionListener(e -> new NovoClienteTela().setVisible(true));
+        page.add(novo);
 
-        JTextField busca = Navegacao.campo("Buscar por pet ou cliente...");
-        busca.setBounds(310, 145, 520, 32);
-        add(busca);
+        JPanel tabela = Navegacao.card();
+        tabela.setBounds(28, 105, 944, 490);
+        page.add(tabela);
 
-        JComboBox<String> tipo = new JComboBox<>(new String[]{"Todos os tipos", "Plano", "Avulso"});
-        tipo.setBounds(845, 145, 120, 32);
-        add(tipo);
+        JTextField busca = Navegacao.campo("Buscar cliente ou pet...");
+        busca.setBounds(20, 28, 430, 36);
+        tabela.add(busca);
 
-        int y = 235;
-        for (AppDados.Cliente cliente : AppDados.clientes) {
-            JPanel card = criarCard(cliente);
-            card.setBounds(310, y, 655, 68);
-            add(card);
-            y += 86;
+        cabecalho(tabela);
+
+        int y = 118;
+        for (AppDados.Cliente c : AppDados.clientes) {
+            linha(tabela, c, y);
+            y += 54;
+        }
+
+        JButton ant = Navegacao.botaoSecundario("<");
+        ant.setBounds(420, 440, 36, 34);
+        tabela.add(ant);
+
+        JButton p1 = Navegacao.botaoPrimario("1");
+        p1.setBounds(462, 440, 36, 34);
+        tabela.add(p1);
+
+        JButton p2 = Navegacao.botaoSecundario("2");
+        p2.setBounds(504, 440, 36, 34);
+        tabela.add(p2);
+
+        JButton prox = Navegacao.botaoSecundario(">");
+        prox.setBounds(546, 440, 36, 34);
+        tabela.add(prox);
+    }
+
+    private void cabecalho(JPanel tabela) {
+        String[] colunas = {"Cliente", "Pets", "Contato", "Tipo", "Acoes"};
+        int[] xs = {35, 280, 450, 640, 820};
+        for (int i = 0; i < colunas.length; i++) {
+            JLabel c = Navegacao.label(colunas[i], 11, Font.BOLD, Navegacao.TEXTO);
+            c.setBounds(xs[i], 82, 120, 20);
+            tabela.add(c);
         }
     }
 
-    private JPanel criarCard(AppDados.Cliente cliente) {
-        JPanel card = Navegacao.card(18);
-
-        JLabel iniciais = new JLabel(iniciais(cliente.tutor));
-        iniciais.setHorizontalAlignment(JLabel.CENTER);
-        iniciais.setOpaque(true);
-        iniciais.setBackground(Navegacao.AZUL);
-        iniciais.setForeground(Color.WHITE);
-        iniciais.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        iniciais.setBounds(18, 16, 38, 38);
-        card.add(iniciais);
-
-        JLabel tutorLabel = new JLabel(cliente.tutor);
-        tutorLabel.setFont(new Font("Segoe UI", Font.PLAIN, 18));
-        tutorLabel.setForeground(Navegacao.TEXTO);
-        tutorLabel.setBounds(75, 12, 300, 25);
-        card.add(tutorLabel);
-
-        JLabel petLabel = new JLabel("1 pet  -  " + cliente.telefone);
-        petLabel.setFont(new Font("Segoe UI", Font.PLAIN, 10));
-        petLabel.setBounds(75, 40, 260, 18);
-        card.add(petLabel);
-
-        JLabel tipoLabel = new JLabel("Plano".equals(cliente.tipo) ? "Plano mensal" : "Avulso");
-        tipoLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        tipoLabel.setForeground("Plano".equals(cliente.tipo) ? Navegacao.AZUL : new Color(65, 170, 40));
-        tipoLabel.setBounds(530, 24, 110, 22);
-        card.add(tipoLabel);
-
-        return card;
+    private void linha(JPanel tabela, AppDados.Cliente c, int y) {
+        tabela.add(text(c.tutor, 35, y, 180));
+        tabela.add(text("1 pet", 280, y, 80));
+        tabela.add(text(c.telefone, 450, y, 140));
+        tabela.add(text("Plano".equals(c.tipo) ? "Plano mensal" : "Avulso", 640, y, 120));
+        tabela.add(text("Ver", 820, y, 40));
+        tabela.add(text("Editar", 865, y, 60));
     }
 
-    private String iniciais(String nome) {
-        String[] partes = nome.trim().split(" ");
-        if (partes.length == 1) {
-            return partes[0].substring(0, Math.min(2, partes[0].length())).toUpperCase();
-        }
-        return (partes[0].substring(0, 1) + partes[partes.length - 1].substring(0, 1)).toUpperCase();
+    private JLabel text(String texto, int x, int y, int w) {
+        JLabel label = Navegacao.label(texto, 11, Font.BOLD, Navegacao.TEXTO);
+        label.setBounds(x, y, w, 18);
+        return label;
     }
 
     public static void main(String[] args) {

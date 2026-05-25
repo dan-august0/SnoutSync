@@ -1,8 +1,6 @@
 package com.petsync.telas;
 
-import java.awt.Color;
 import java.awt.Font;
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -13,141 +11,133 @@ import javax.swing.JTextField;
 
 public class NovoAgendamentoTela extends JFrame {
 
-    private JTextField cliente;
-    private JTextField pet;
+    private JComboBox<String> cliente;
+    private JComboBox<String> pet;
+    private JComboBox<String> servico;
+    private JComboBox<String> profissional;
     private JTextField data;
-    private JTextField horario;
-    private JComboBox<String> comboServico;
-    private JComboBox<String> comboStatus;
+    private JTextField hora;
+    private JTextField valor;
+    private JTextField obs;
 
     public NovoAgendamentoTela() {
-        setTitle("PetSync - Novo Agendamento");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLayout(null);
-        setResizable(false);
-        getContentPane().setBackground(Navegacao.FUNDO);
-        getContentPane().setPreferredSize(new java.awt.Dimension(1000, 600));
-        pack();
-        setLocationRelativeTo(null);
+        Navegacao.configurarModal(this, "SnoutSync - Novo Agendamento");
 
-        JLabel titulo = new JLabel("+ Novo agendamento");
-        titulo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        titulo.setForeground(Navegacao.TEXTO);
-        titulo.setBounds(500, 55, 180, 24);
-        add(titulo);
+        JPanel page = new JPanel(null);
+        page.setOpaque(false);
+        page.setBounds(0, 0, Navegacao.APP_W, Navegacao.APP_H);
+        add(page);
 
-        JPanel card = Navegacao.card(18);
-        card.setBounds(185, 110, 650, 360);
-        add(card);
+        JLabel titulo = Navegacao.label("Novo Agendamento", 24, Font.BOLD, Navegacao.TEXTO);
+        titulo.setBounds(45, 32, 300, 30);
+        page.add(titulo);
 
-        JLabel secao = new JLabel("Dados do Agendamento");
-        secao.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        secao.setForeground(Navegacao.AZUL);
-        secao.setBounds(25, 18, 250, 24);
-        card.add(secao);
+        JLabel sub = Navegacao.label("Agende um novo servico.", 12, Font.PLAIN, Navegacao.TEXTO_SUAVE);
+        sub.setBounds(45, 64, 250, 18);
+        page.add(sub);
 
-        adicionarLabel(card, "Cliente", 25, 65);
-        cliente = criarCampo(25, 88, 245);
-        card.add(cliente);
+        JLabel fechar = Navegacao.label("X", 20, Font.BOLD, Navegacao.TEXTO);
+        fechar.setBounds(1138, 32, 28, 28);
+        fechar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        fechar.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                dispose();
+            }
+        });
+        page.add(fechar);
 
-        adicionarLabel(card, "Pet", 300, 65);
-        pet = criarCampo(300, 88, 245);
-        card.add(pet);
+        JPanel esquerda = Navegacao.card();
+        esquerda.setBounds(45, 115, 545, 420);
+        page.add(esquerda);
 
-        adicionarLabel(card, "Data", 25, 130);
-        data = criarCampo(25, 153, 220);
-        data.setText("01/01/26");
-        card.add(data);
+        cliente = comboComLabel(esquerda, "Cliente", clientesCombo(), 22, 45, 490);
+        pet = comboComLabel(esquerda, "Pet", petsCombo(), 22, 128, 490);
+        servico = comboComLabel(esquerda, "Servico", new String[]{"Banho", "Tosa", "Banho + Tosa", "Consulta", "Vacinacao"}, 22, 211, 490);
+        obs = campoComLabel(esquerda, "Observacoes", "Observacoes sobre o agendamento (opcional)", 22, 294, 490);
 
-        adicionarLabel(card, "Tipo de agendamento", 300, 130);
-        comboServico = new JComboBox<>(new String[]{"Avulso", "Banho", "Tosa", "Banho + Tosa"});
-        comboServico.setBounds(300, 153, 170, 40);
-        card.add(comboServico);
+        JPanel direita = Navegacao.card();
+        direita.setBounds(610, 115, 545, 420);
+        page.add(direita);
 
-        JPanel plano = Navegacao.card(8);
-        plano.setBackground(Navegacao.AMARELO);
-        plano.setBounds(480, 153, 145, 55);
-        JLabel planoTexto = new JLabel("<html>Plano mensal<br>4 banhos/mes</html>");
-        planoTexto.setFont(new Font("Segoe UI", Font.PLAIN, 10));
-        planoTexto.setForeground(Navegacao.TEXTO);
-        planoTexto.setBounds(12, 8, 125, 40);
-        plano.add(planoTexto);
-        card.add(plano);
+        data = campoComLabel(direita, "Data", "20/05/2026", 22, 45, 230);
+        hora = campoComLabel(direita, "Hora", "10:00", 282, 45, 230);
+        profissional = comboComLabel(direita, "Profissional", new String[]{"Selecione o profissional", "Leonardo", "Maria", "Carlos"}, 22, 128, 490);
+        valor = campoComLabel(direita, "Valor", "R$ 0,00", 22, 211, 490);
 
-        adicionarLabel(card, "Hora", 25, 200);
-        horario = criarCampo(25, 223, 220);
-        horario.setText("04:00");
-        card.add(horario);
+        JButton cancelar = Navegacao.botaoSecundario("Cancelar");
+        cancelar.setBounds(785, 625, 135, 38);
+        cancelar.addActionListener(e -> dispose());
+        page.add(cancelar);
 
-        comboStatus = new JComboBox<>(new String[]{"Confirmado", "Pendente", "Cancelado"});
-        comboStatus.setBounds(300, 223, 170, 35);
-        card.add(comboStatus);
-
-        adicionarLabel(card, "Observacoes", 25, 235);
-        JTextField obs = criarCampo(25, 258, 600);
-        obs.setText("EX: Nervoso com estranhos, alergias...");
-        card.add(obs);
-
-        JButton fechar = Navegacao.botaoCinza("Fechar");
-        fechar.setBounds(395, 305, 120, 35);
-        fechar.addActionListener(e -> dispose());
-        card.add(fechar);
-
-        JButton agendar = new JButton("Cadastrar");
-        agendar.setBounds(525, 305, 100, 35);
-        agendar.setBackground(Navegacao.AZUL);
-        agendar.setForeground(Color.WHITE);
-        agendar.setBorderPainted(false);
-        agendar.setFocusPainted(false);
-        agendar.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        agendar.addActionListener(e -> salvarAgendamento());
-        card.add(agendar);
+        JButton salvar = Navegacao.botaoPrimario("Salvar Agendamento");
+        salvar.setBounds(940, 625, 180, 38);
+        salvar.addActionListener(e -> salvar());
+        page.add(salvar);
     }
 
-    private void salvarAgendamento() {
-        if (campoVazio(cliente) || campoVazio(pet) || campoVazio(data) || campoVazio(horario)) {
-            JOptionPane.showMessageDialog(this, "Preencha todos os campos.", "Atencao", JOptionPane.WARNING_MESSAGE);
+    private String[] clientesCombo() {
+        if (AppDados.clientes.isEmpty()) {
+            return new String[]{"Selecione o cliente"};
+        }
+        String[] nomes = new String[AppDados.clientes.size()];
+        for (int i = 0; i < AppDados.clientes.size(); i++) {
+            nomes[i] = AppDados.clientes.get(i).tutor;
+        }
+        return nomes;
+    }
+
+    private String[] petsCombo() {
+        if (AppDados.clientes.isEmpty()) {
+            return new String[]{"Selecione o pet"};
+        }
+        String[] pets = new String[AppDados.clientes.size()];
+        for (int i = 0; i < AppDados.clientes.size(); i++) {
+            pets[i] = AppDados.clientes.get(i).pet;
+        }
+        return pets;
+    }
+
+    private JComboBox<String> comboComLabel(JPanel panel, String label, String[] itens, int x, int y, int w) {
+        JLabel l = Navegacao.label(label, 12, Font.BOLD, Navegacao.TEXTO);
+        l.setBounds(x, y, w, 18);
+        panel.add(l);
+        JComboBox<String> combo = new JComboBox<>(itens);
+        combo.setBounds(x, y + 24, w, 38);
+        panel.add(combo);
+        return combo;
+    }
+
+    private JTextField campoComLabel(JPanel panel, String label, String placeholder, int x, int y, int w) {
+        JLabel l = Navegacao.label(label, 12, Font.BOLD, Navegacao.TEXTO);
+        l.setBounds(x, y, w, 18);
+        panel.add(l);
+        JTextField campo = Navegacao.campo(placeholder);
+        campo.setBounds(x, y + 24, w, 38);
+        panel.add(campo);
+        return campo;
+    }
+
+    private void salvar() {
+        String clienteSelecionado = cliente.getSelectedItem().toString();
+        String petSelecionado = pet.getSelectedItem().toString();
+
+        if (clienteSelecionado.startsWith("Selecione") || petSelecionado.startsWith("Selecione")) {
+            JOptionPane.showMessageDialog(this, "Selecione cliente e pet.");
             return;
         }
 
         AppDados.adicionarAgendamento(new AppDados.Agendamento(
-                cliente.getText().trim(),
-                pet.getText().trim(),
-                servicoSelecionado(),
+                clienteSelecionado,
+                petSelecionado,
+                servico.getSelectedItem().toString(),
                 data.getText().trim(),
-                horario.getText().trim(),
-                comboStatus.getSelectedItem().toString()
+                hora.getText().trim(),
+                "Confirmado"
         ));
 
-        JOptionPane.showMessageDialog(this, "Agendamento salvo com sucesso!");
+        JOptionPane.showMessageDialog(this, "Agendamento salvo com sucesso.");
         Navegacao.abrir(this, new AgendamentosTela());
-    }
-
-    private boolean campoVazio(JTextField campo) {
-        return campo.getText().trim().isEmpty();
-    }
-
-    private String servicoSelecionado() {
-        String valor = comboServico.getSelectedItem().toString();
-        if ("Avulso".equals(valor)) {
-            return "Banho";
-        }
-        return valor;
-    }
-
-    private void adicionarLabel(javax.swing.JPanel pai, String texto, int x, int y) {
-        JLabel label = new JLabel(texto);
-        label.setFont(new Font("Segoe UI", Font.BOLD, 15));
-        label.setBounds(x, y, 220, 20);
-        pai.add(label);
-    }
-
-    private JTextField criarCampo(int x, int y, int largura) {
-        JTextField campo = new JTextField();
-        campo.setBounds(x, y, largura, 35);
-        campo.setBackground(Navegacao.CINZA);
-        campo.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        return campo;
     }
 
     public static void main(String[] args) {

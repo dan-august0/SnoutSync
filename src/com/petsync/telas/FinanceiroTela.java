@@ -2,134 +2,130 @@ package com.petsync.telas;
 
 import java.awt.Color;
 import java.awt.Font;
-import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 public class FinanceiroTela extends JFrame {
 
     public FinanceiroTela() {
-        Navegacao.configurarJanela(this, "PetSync - Financeiro");
-        add(Navegacao.criarSidebar(this, "Financeiro"));
-        Navegacao.adicionarTopo(this, "Financeiro");
+        JPanel page = Navegacao.page(this, "Financeiro", "Financeiro", "Acompanhe receitas, despesas e relatorios.");
 
-        JPanel faturamento = criarCard("Faturamento por mes", "R$" + AppDados.faturamentoEstimado(), AppDados.agendamentos.size() + " atendimentos");
-        faturamento.setBounds(320, 125, 140, 80);
-        add(faturamento);
+        JButton relatorio = Navegacao.botaoSecundario("Relatorio");
+        relatorio.setBounds(720, 28, 105, 34);
+        page.add(relatorio);
 
-        JPanel planos = criarCard("Planos ativos", "R$ " + (AppDados.totalPlanos() * 90), AppDados.totalPlanos() + " planos");
-        planos.setBounds(555, 125, 140, 80);
-        add(planos);
+        JButton novo = Navegacao.botaoPrimario("+ Novo Lancamento");
+        novo.setBounds(835, 28, 138, 34);
+        page.add(novo);
 
-        JPanel pendentes = criarCard("Pagamentos pendentes", "R$160", "2 atendimentos");
-        pendentes.setBounds(795, 125, 140, 80);
-        add(pendentes);
+        int faturamento = AppDados.faturamentoEstimado();
+        page.add(metric("Receitas (mes)", "R$ " + (faturamento + 2590) + ",00", "+10% vs mes anterior", Navegacao.VERDE, 28, 105));
+        page.add(metric("Despesas (mes)", "R$ 2.590,00", "-6% vs mes anterior", Color.RED, 238, 105));
+        page.add(metric("Lucro (mes)", "R$ " + faturamento + ",00", "+29% vs mes anterior", Navegacao.VERDE, 448, 105));
+        page.add(metric("Total em aberto", "R$ 1.250,00", "3 titulos", Navegacao.LARANJA, 658, 105));
 
-        JLabel lancamentos = new JLabel("Lancamentos Recentes");
-        lancamentos.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        lancamentos.setForeground(Navegacao.TEXTO);
-        lancamentos.setBounds(320, 235, 200, 22);
-        add(lancamentos);
+        JPanel fluxo = Navegacao.card();
+        fluxo.setBounds(28, 220, 420, 220);
+        page.add(fluxo);
+        JLabel ft = Navegacao.label("Fluxo de Caixa (mes)", 14, Font.BOLD, Navegacao.TEXTO);
+        ft.setBounds(18, 18, 220, 22);
+        fluxo.add(ft);
+        for (int i = 0; i < 8; i++) {
+            JPanel barra = new JPanel();
+            barra.setBackground(Navegacao.VERDE);
+            barra.setBounds(35 + i * 45, 160 - (i % 4) * 22, 18, 35 + (i % 4) * 22);
+            fluxo.add(barra);
 
-        JPanel tabela = new JPanel();
-        tabela.setLayout(null);
-        tabela.setBackground(Navegacao.CINZA);
-        tabela.setBounds(320, 265, 615, 155);
-        add(tabela);
-
-        adicionarCabecalho(tabela);
-
-        int y = 34;
-        for (AppDados.Agendamento agendamento : AppDados.agendamentos) {
-            adicionarLinha(tabela, agendamento, y);
-            y += 24;
+            JPanel despesa = new JPanel();
+            despesa.setBackground(new Color(255, 111, 86));
+            despesa.setBounds(58 + i * 45, 175 - (i % 3) * 8, 10, 20 + (i % 3) * 8);
+            fluxo.add(despesa);
         }
 
-        javax.swing.JButton relatorio = Navegacao.botaoAzul("Gerar relatorio financeiro", 12);
-        relatorio.setBounds(570, 470, 180, 38);
-        add(relatorio);
+        JPanel categorias = Navegacao.card();
+        categorias.setBounds(470, 220, 250, 220);
+        page.add(categorias);
+        JLabel ct = Navegacao.label("Categorias de Despesas", 14, Font.BOLD, Navegacao.TEXTO);
+        ct.setBounds(18, 18, 220, 22);
+        categorias.add(ct);
+        JLabel donut = Navegacao.circle("40%", 26, Navegacao.AZUL, Navegacao.AZUL_CLARO);
+        donut.setBounds(65, 65, 95, 95);
+        categorias.add(donut);
+        categorias.add(info("Produtos", "40%", 165, 70, Navegacao.AZUL));
+        categorias.add(info("Salarios", "30%", 165, 96, Navegacao.VERDE));
+        categorias.add(info("Aluguel", "15%", 165, 122, Navegacao.LARANJA));
+        categorias.add(info("Outros", "15%", 165, 148, Navegacao.TEXTO_SUAVE));
+
+        JPanel tabela = Navegacao.card();
+        tabela.setBounds(28, 465, 944, 210);
+        page.add(tabela);
+        JLabel titulo = Navegacao.label("Lancamentos", 15, Font.BOLD, Navegacao.TEXTO);
+        titulo.setBounds(18, 16, 160, 22);
+        tabela.add(titulo);
+        JTextField busca = Navegacao.campo("Buscar lancamento...");
+        busca.setBounds(640, 16, 280, 34);
+        tabela.add(busca);
+        JComboBox<String> cat = new JComboBox<>(new String[]{"Todas as categorias", "Servicos", "Produtos", "Aluguel"});
+        cat.setBounds(420, 16, 190, 34);
+        tabela.add(cat);
+
+        cabecalho(tabela);
+        linha(tabela, "20/05/2026", "Banho e Tosa - Rex", "Servicos", "Receita", "R$ 120,00", "Pago", 96);
+        linha(tabela, "20/05/2026", "Consulta - Luna", "Servicos", "Receita", "R$ 80,00", "Pago", 126);
+        linha(tabela, "19/05/2026", "Aluguel", "Aluguel", "Despesa", "R$ 1.200,00", "Pago", 156);
     }
 
-    private int valor(String servico) {
-        if ("Banho + Tosa".equals(servico)) {
-            return 120;
-        }
-        if ("Banho".equals(servico)) {
-            return 70;
-        }
-        return 55;
-    }
-
-    private JPanel criarCard(String titulo, String valor, String detalhe) {
-        JPanel card = Navegacao.card(16);
-
-        JLabel tituloLabel = new JLabel(titulo);
-        tituloLabel.setFont(new Font("Segoe UI", Font.PLAIN, 10));
-        tituloLabel.setForeground(Navegacao.TEXTO);
-        tituloLabel.setBounds(15, 10, 115, 18);
-        card.add(tituloLabel);
-
-        JLabel valorLabel = new JLabel(valor);
-        valorLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        valorLabel.setBounds(15, 32, 110, 20);
-        card.add(valorLabel);
-
-        JLabel detalheLabel = new JLabel(detalhe);
-        detalheLabel.setFont(new Font("Segoe UI", Font.PLAIN, 9));
-        detalheLabel.setBounds(15, 52, 110, 16);
-        card.add(detalheLabel);
-
+    private JPanel metric(String titulo, String valor, String detalhe, Color cor, int x, int y) {
+        JPanel card = Navegacao.card();
+        card.setBounds(x, y, 190, 88);
+        JLabel t = Navegacao.label(titulo, 11, Font.BOLD, Navegacao.TEXTO_SUAVE);
+        t.setBounds(18, 16, 150, 18);
+        card.add(t);
+        JLabel v = Navegacao.label(valor, 17, Font.BOLD, Navegacao.TEXTO);
+        v.setBounds(18, 38, 160, 24);
+        card.add(v);
+        JLabel d = Navegacao.label(detalhe, 10, Font.BOLD, cor);
+        d.setBounds(18, 62, 160, 16);
+        card.add(d);
         return card;
     }
 
-    private void adicionarCabecalho(JPanel tabela) {
-        String[] colunas = {"Data", "Cliente", "Pet", "Servico", "Tipo", "Forma de pagto", "Valor", "Status"};
-        int[] x = {12, 75, 160, 225, 330, 395, 505, 555};
+    private JLabel info(String nome, String valor, int x, int y, Color cor) {
+        JLabel label = Navegacao.label(nome + "    " + valor, 11, Font.BOLD, cor);
+        label.setBounds(x, y, 80, 18);
+        return label;
+    }
+
+    private void cabecalho(JPanel tabela) {
+        String[] colunas = {"Data", "Descricao", "Categoria", "Tipo", "Valor", "Status", "Acoes"};
+        int[] xs = {20, 120, 360, 520, 640, 760, 865};
         for (int i = 0; i < colunas.length; i++) {
-            JLabel label = new JLabel(colunas[i]);
-            label.setFont(new Font("Segoe UI", Font.BOLD, 8));
-            label.setBounds(x[i], 10, 80, 14);
-            tabela.add(label);
+            JLabel c = Navegacao.label(colunas[i], 11, Font.BOLD, Navegacao.TEXTO);
+            c.setBounds(xs[i], 65, 120, 18);
+            tabela.add(c);
         }
     }
 
-    private void adicionarLinha(JPanel tabela, AppDados.Agendamento agendamento, int y) {
-        adicionarTexto(tabela, agendamento.data, 12, y, 60, Color.BLACK);
-        adicionarTexto(tabela, agendamento.cliente, 75, y, 85, Color.BLACK);
-        adicionarTexto(tabela, agendamento.pet, 160, y, 55, Color.BLACK);
-        adicionarTexto(tabela, agendamento.servico, 225, y, 95, Color.BLACK);
-        adicionarTexto(tabela, tipoCliente(agendamento.cliente), 330, y, 55, Color.BLACK);
-        adicionarTexto(tabela, "Pix", 395, y, 75, Color.BLACK);
-        adicionarTexto(tabela, "R$" + valor(agendamento.servico), 505, y, 45, new Color(65, 170, 40));
-        adicionarTexto(tabela, agendamento.status, 555, y, 65, corStatus(agendamento.status));
+    private void linha(JPanel tabela, String data, String desc, String categoria, String tipo, String valor, String status, int y) {
+        tabela.add(text(data, 20, y, 85));
+        tabela.add(text(desc, 120, y, 190));
+        tabela.add(text(categoria, 360, y, 100));
+        tabela.add(text(tipo, 520, y, 85));
+        tabela.add(text(valor, 640, y, 100));
+        JPanel b = Navegacao.badge(status, new Color(220, 248, 232), Navegacao.VERDE);
+        b.setBounds(760, y - 3, 70, 24);
+        tabela.add(b);
+        tabela.add(text("Editar", 865, y, 50));
     }
 
-    private void adicionarTexto(JPanel tabela, String texto, int x, int y, int largura, Color cor) {
-        JLabel label = new JLabel(texto);
-        label.setFont(new Font("Segoe UI", Font.PLAIN, 8));
-        label.setForeground(cor);
-        label.setBounds(x, y, largura, 16);
-        tabela.add(label);
-    }
-
-    private String tipoCliente(String tutor) {
-        for (AppDados.Cliente cliente : AppDados.clientes) {
-            if (cliente.tutor.equals(tutor)) {
-                return cliente.tipo;
-            }
-        }
-        return "Avulso";
-    }
-
-    private Color corStatus(String status) {
-        if ("Confirmado".equals(status)) {
-            return new Color(65, 170, 40);
-        }
-        if ("Cancelado".equals(status)) {
-            return new Color(225, 130, 35);
-        }
-        return Navegacao.AZUL;
+    private JLabel text(String texto, int x, int y, int w) {
+        JLabel label = Navegacao.label(texto, 11, Font.BOLD, Navegacao.TEXTO);
+        label.setBounds(x, y, w, 18);
+        return label;
     }
 
     public static void main(String[] args) {

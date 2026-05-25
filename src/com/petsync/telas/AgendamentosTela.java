@@ -1,9 +1,7 @@
 package com.petsync.telas;
 
 import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.Font;
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -14,84 +12,93 @@ import javax.swing.JTextField;
 public class AgendamentosTela extends JFrame {
 
     public AgendamentosTela() {
-        Navegacao.configurarJanela(this, "PetSync - Agendamentos");
-        add(Navegacao.criarSidebar(this, "Agendamentos"));
-        Navegacao.adicionarTopo(this, "Agendamento");
+        JPanel page = Navegacao.page(this, "Agendamentos", "Agendamentos", "Gerencie todos os agendamentos.");
 
-        JLabel titulo = new JLabel("Lista de Agendamento");
-        titulo.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        titulo.setForeground(Navegacao.AZUL);
-        titulo.setBounds(310, 112, 180, 22);
-        add(titulo);
+        JButton novo = Navegacao.botaoPrimario("+ Novo Agendamento");
+        novo.setBounds(820, 28, 150, 34);
+        novo.addActionListener(e -> new NovoAgendamentoTela().setVisible(true));
+        page.add(novo);
 
-        JButton botaoNovo = Navegacao.botaoCinza("+ Novo agendamento");
-        botaoNovo.setBounds(470, 112, 150, 26);
-        botaoNovo.addActionListener(e -> new NovoAgendamentoTela().setVisible(true));
-        add(botaoNovo);
+        JPanel tabela = Navegacao.card();
+        tabela.setBounds(28, 105, 944, 490);
+        page.add(tabela);
 
-        JPanel painel = Navegacao.card(16);
-        painel.setBounds(285, 150, 690, 405);
-        add(painel);
+        JTextField busca = Navegacao.campo("Buscar agendamento...");
+        busca.setBounds(610, 28, 300, 36);
+        tabela.add(busca);
 
-        JTextField busca = Navegacao.campo("Buscar por pet ou cliente...");
-        busca.setBounds(15, 20, 350, 28);
-        painel.add(busca);
+        JComboBox<String> filtro = new JComboBox<>(new String[]{"Todos os status", "Confirmado", "Pendente", "Cancelado"});
+        filtro.setBounds(385, 28, 190, 36);
+        tabela.add(filtro);
 
-        JComboBox<String> status = new JComboBox<>(new String[]{"Todos os status", "Agendado", "Concluido", "Cancelado"});
-        status.setBounds(375, 20, 130, 28);
-        painel.add(status);
+        JTextField data = Navegacao.campo("20/05/2026");
+        data.setBounds(20, 28, 160, 36);
+        tabela.add(data);
 
-        JComboBox<String> periodo = new JComboBox<>(new String[]{"Hoje", "Esta semana", "Este mes"});
-        periodo.setBounds(515, 20, 145, 28);
-        painel.add(periodo);
+        cabecalho(tabela);
 
-        adicionarCabecalho(painel);
-
-        int y = 98;
-        for (AppDados.Agendamento agendamento : AppDados.agendamentos) {
-            adicionarLinha(painel, agendamento, y);
-            y += 45;
+        int y = 112;
+        for (AppDados.Agendamento a : AppDados.agendamentos) {
+            linha(tabela, a, y);
+            y += 56;
         }
+
+        JButton ant = Navegacao.botaoSecundario("<");
+        ant.setBounds(420, 440, 36, 34);
+        tabela.add(ant);
+
+        JButton p1 = Navegacao.botaoPrimario("1");
+        p1.setBounds(462, 440, 36, 34);
+        tabela.add(p1);
+
+        JButton p2 = Navegacao.botaoSecundario("2");
+        p2.setBounds(504, 440, 36, 34);
+        tabela.add(p2);
+
+        JButton prox = Navegacao.botaoSecundario(">");
+        prox.setBounds(546, 440, 36, 34);
+        tabela.add(prox);
     }
 
-    private void adicionarCabecalho(JPanel painel) {
-        String[] colunas = {"Horario", "Pets", "Tutor", "Servico", "Tipo"};
-        int[] x = {35, 130, 250, 420, 585};
+    private void cabecalho(JPanel tabela) {
+        String[] colunas = {"Horario", "Pet", "Servico", "Cliente", "Status", "Acoes"};
+        int[] xs = {35, 150, 285, 460, 645, 820};
         for (int i = 0; i < colunas.length; i++) {
-            JLabel label = new JLabel(colunas[i]);
-            label.setFont(new Font("Segoe UI", Font.BOLD, 11));
-            label.setBounds(x[i], 72, 90, 18);
-            painel.add(label);
+            JLabel c = Navegacao.label(colunas[i], 11, Font.BOLD, Navegacao.TEXTO);
+            c.setBounds(xs[i], 82, 110, 20);
+            tabela.add(c);
         }
     }
 
-    private void adicionarLinha(JPanel painel, AppDados.Agendamento agendamento, int y) {
-        adicionarTexto(painel, agendamento.horario, 35, y, 80, Color.BLACK);
-        adicionarTexto(painel, agendamento.pet, 130, y, 100, Color.BLACK);
-        adicionarTexto(painel, agendamento.cliente, 250, y, 145, Color.BLACK);
-        adicionarTexto(painel, agendamento.servico, 420, y, 130, Color.BLACK);
-        adicionarTexto(painel, tipoCliente(agendamento.cliente), 585, y, 80, corTipo(tipoCliente(agendamento.cliente)));
+    private void linha(JPanel tabela, AppDados.Agendamento a, int y) {
+        tabela.add(text(a.horario, 35, y, 70));
+        JLabel avatar = Navegacao.circle(a.pet.substring(0, 1).toUpperCase(), 12, Color.WHITE, Navegacao.AZUL_2);
+        avatar.setBounds(150, y - 8, 32, 32);
+        tabela.add(avatar);
+        tabela.add(text(a.pet, 190, y, 80));
+        tabela.add(text(a.servico, 285, y, 130));
+        tabela.add(text(a.cliente, 460, y, 130));
+        JPanel status = status(a.status);
+        status.setBounds(645, y - 4, 82, 24);
+        tabela.add(status);
+        tabela.add(text("Editar", 820, y, 50));
+        tabela.add(text("Excluir", 875, y, 55));
     }
 
-    private void adicionarTexto(JPanel painel, String texto, int x, int y, int largura, Color cor) {
-        JLabel label = new JLabel(texto);
-        label.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-        label.setForeground(cor);
-        label.setBounds(x, y, largura, 22);
-        painel.add(label);
+    private JLabel text(String texto, int x, int y, int w) {
+        JLabel label = Navegacao.label(texto, 11, Font.BOLD, Navegacao.TEXTO);
+        label.setBounds(x, y, w, 18);
+        return label;
     }
 
-    private String tipoCliente(String tutor) {
-        for (AppDados.Cliente cliente : AppDados.clientes) {
-            if (cliente.tutor.equals(tutor)) {
-                return "Plano".equals(cliente.tipo) ? "Plano" : "Avulso";
-            }
+    private JPanel status(String status) {
+        if ("Pendente".equals(status)) {
+            return Navegacao.badge("Pendente", new Color(255, 240, 214), Navegacao.LARANJA);
         }
-        return "Avulso";
-    }
-
-    private Color corTipo(String tipo) {
-        return "Plano".equals(tipo) ? Navegacao.AZUL : new Color(65, 170, 40);
+        if ("Cancelado".equals(status)) {
+            return Navegacao.badge("Cancelado", new Color(255, 230, 225), Color.RED);
+        }
+        return Navegacao.badge("Confirmado", new Color(220, 248, 232), Navegacao.VERDE);
     }
 
     public static void main(String[] args) {

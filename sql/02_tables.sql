@@ -1,13 +1,13 @@
 USE petsync;
 
-CREATE TABLE cliente (
+CREATE TABLE IF NOT EXISTS cliente (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     telefone VARCHAR(20),
-    tipo ENUM('AVULSO','PLANO') NOT NULL
+    tipo ENUM('AVULSO','PLANO') NOT NULL DEFAULT 'AVULSO'
 );
 
-CREATE TABLE pet (
+CREATE TABLE IF NOT EXISTS pet (
     id INT AUTO_INCREMENT PRIMARY KEY,
     cliente_id INT NOT NULL,
     nome VARCHAR(100) NOT NULL,
@@ -18,9 +18,9 @@ CREATE TABLE pet (
     FOREIGN KEY (cliente_id) REFERENCES cliente(id)
 );
 
-CREATE TABLE servico (
+CREATE TABLE IF NOT EXISTS servico (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(100),
+    nome VARCHAR(100) NOT NULL,
     descricao TEXT,
     preco_pequeno DECIMAL(10,2),
     preco_medio DECIMAL(10,2),
@@ -30,7 +30,7 @@ CREATE TABLE servico (
     duracao_grande INT
 );
 
-CREATE TABLE plano (
+CREATE TABLE IF NOT EXISTS plano (
     id INT AUTO_INCREMENT PRIMARY KEY,
     cliente_id INT UNIQUE,
     data_inicio DATE,
@@ -40,19 +40,19 @@ CREATE TABLE plano (
     FOREIGN KEY (cliente_id) REFERENCES cliente(id)
 );
 
-CREATE TABLE agendamento (
+CREATE TABLE IF NOT EXISTS agendamento (
     id INT AUTO_INCREMENT PRIMARY KEY,
     pet_id INT NOT NULL,
     servico_id INT NOT NULL,
     data DATE NOT NULL,
     hora TIME NOT NULL,
-    status ENUM('AGENDADO','EM_ANDAMENTO','CONCLUIDO','CANCELADO'),
+    status ENUM('AGENDADO','EM_ANDAMENTO','CONCLUIDO','CANCELADO') DEFAULT 'AGENDADO',
     observacoes TEXT,
     FOREIGN KEY (pet_id) REFERENCES pet(id),
     FOREIGN KEY (servico_id) REFERENCES servico(id)
 );
 
-CREATE TABLE atendimento (
+CREATE TABLE IF NOT EXISTS atendimento (
     id INT AUTO_INCREMENT PRIMARY KEY,
     agendamento_id INT UNIQUE,
     valor_cobrado DECIMAL(10,2),
